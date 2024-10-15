@@ -19,19 +19,8 @@
 <resources>
     <color name="primary_dark_material_dark">@*android:color/background_dark</color>
     <color name="primary_material_dark">@*android:color/background_dark</color>
-    <color name="background_material_dark">@*android:color/background_dark</color>	
+    <color name="background_material_dark">@*android:color/background_dark</color>
     <color name="keyguard_avatar_frame_shadow_color">@*android:color/background_dark</color>
-    <color name="system_accent1_400">@*android:color/accent_material_dark</color>
-    <color name="system_accent1_500">@*android:color/accent_material_dark</color>
-	<color name="system_accent1_600">@*android:color/accent_material_dark</color>	
-    <color name="group_button_dialog_focused_holo_dark">#e6000000</color>	<!-- 10% -->
-    <color name="group_button_dialog_focused_holo_light">#cc000000</color>	<!-- 20% -->
-    <color name="group_button_dialog_pressed_holo_dark">#a6000000</color>	<!-- 40% -->
-    <color name="group_button_dialog_pressed_holo_light">#80000000</color>	<!-- 50% -->
-    <color name="car_blue_grey_800">#33000000</color>						<!-- 80% -->
-    <color name="car_blue_grey_900">#1a000000</color>						<!-- 90% -->
-    <color name="transparent">#00000000</color>
-    <color name="darker_gray">#ff7e8490</color>
     <color name="legacy_primary">@*android:color/background_dark</color>
     <color name="accent_material_light">@*android:color/holo_blue_light</color>
     <color name="holo_blue_dark">@*android:color/accent_material_dark</color>
@@ -44,14 +33,17 @@
     <color name="holo_blue_bright">@*android:color/accent_material_dark</color>
     <color name="system_neutral2_900">@*android:color/background_dark</color>
     <color name="system_neutral2_1000">@*android:color/background_dark</color>
-    <color name="system_accent1_100">@*android:color/accent_material_dark</color>
-    <color name="system_accent1_200">@*android:color/accent_material_dark</color>
-    <color name="system_accent1_300">@*android:color/accent_material_dark</color>
+    <color name="system_accent1_100">@*android:color/accent_material_dark</color>                   <!-- sfondo tab attivato -->
+    <color name="system_accent1_200">@*android:color/button_material_dark</color>                   <!-- sfondo icona Discover -->
+    <color name="system_accent1_300">#ffffffff</color>                                              <!-- sfondo switch piccolo attivo -->
+    <color name="system_accent1_400">@*android:color/accent_material_dark</color>
+    <color name="system_accent1_500">@*android:color/accent_material_dark</color>
+    <color name="system_accent1_600">@*android:color/holo_blue_light</color>                        <!-- tab disattivato e sfondo switch piccolo  disattivato -->
     <color name="system_accent1_900">@*android:color/background_dark</color>
     <color name="system_accent1_1000">@*android:color/background_dark</color>
-    <color name="system_accent2_100">@*android:color/accent_material_dark</color>
+    <color name="system_accent2_100">@*android:color/accent_material_dark</color>                   <!-- card e sfondo titolo accent -->
     <color name="system_accent2_200">@*android:color/accent_material_dark</color>
-    <color name="system_accent2_300">@*android:color/accent_material_dark</color>
+    <color name="system_accent2_300">#ffffffff</color>                                              <!-- pallino switch disattivato -->
     <color name="system_accent2_900">@*android:color/background_dark</color>
     <color name="system_accent2_1000">@*android:color/background_dark</color>
     <color name="system_accent3_100">@*android:color/accent_material_dark</color>
@@ -257,8 +249,8 @@
     <color name="system_neutral1_10">#ffffff</color>
     <color name="system_neutral1_50">#ffffff</color>
     <color name="system_neutral1_100">#ffffff</color>
-    <color name="system_neutral1_200">#babac9</color>
-    <color name="system_neutral1_300">#babac9</color>
+    <color name="system_neutral1_200">#babaca</color>
+    <color name="system_neutral1_300">#babaca</color>
     <color name="system_neutral1_400">@*android:color/accent_material_dark</color>
     <color name="system_neutral1_500">@*android:color/button_material_light</color>
     <color name="system_neutral1_600">@*android:color/button_material_dark</color>
@@ -271,8 +263,8 @@
     <color name="system_neutral2_10">#ffffff</color>
     <color name="system_neutral2_50">#ffffff</color>
     <color name="system_neutral2_100">#ffffff</color>
-    <color name="system_neutral2_200">#babac9</color>
-    <color name="system_neutral2_300">#babac9</color>
+    <color name="system_neutral2_200">#babaca</color>                                               <!-- testo grey -->
+    <color name="system_neutral2_300">#babaca</color>
     <color name="system_neutral2_400">@*android:color/accent_material_dark</color>
     <color name="system_neutral2_500">@*android:color/button_material_light</color>
     <color name="system_neutral2_600">@*android:color/button_material_dark</color>
@@ -281,7 +273,7 @@
 
     <!-- Changes for background theme, the system_neutral method
         doesn't work for transparency -->
-	<color name="surface_header_dark">@*android:color/black</color>
+    <color name="surface_header_dark">@*android:color/black</color>
     <color name="background_device_default_light">#b1f7f7fe</color>
     <color name="background_device_default_dark">#ae1b2029</color>
     <color name="primary_device_default_light">@*android:color/background_device_default_light</color>
