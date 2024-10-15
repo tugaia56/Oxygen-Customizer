@@ -28,15 +28,16 @@
     <color name="holo_primary">#282c36</color>
     <color name="holo_primary_dark">#353944</color>
     <color name="black">#1b2029</color>
+    <color name="transparent">#00000000</color>
+    <color name="darker_gray">#ff7e8490</color>
 
+<!--  Trasparenza Sfondo  -->
     <color name="group_button_dialog_focused_holo_dark">#e6000000</color>	<!-- 10% -->
     <color name="group_button_dialog_focused_holo_light">#cc000000</color>	<!-- 20% -->
     <color name="group_button_dialog_pressed_holo_dark">#a6000000</color>	<!-- 40% -->
     <color name="group_button_dialog_pressed_holo_light">#80000000</color>	<!-- 50% -->
     <color name="car_blue_grey_800">#33000000</color>						<!-- 80% -->
     <color name="car_blue_grey_900">#1a000000</color>						<!-- 90% -->
-    <color name="transparent">#00000000</color>
-    <color name="darker_gray">#ff7e8490</color>
 
     <!-- Accent -->
     <color name="accent_material_dark">#908dff</color>

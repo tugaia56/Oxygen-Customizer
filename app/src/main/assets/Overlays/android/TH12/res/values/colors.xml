@@ -249,8 +249,8 @@
     <color name="system_neutral1_10">#ffffff</color>
     <color name="system_neutral1_50">#ffffff</color>
     <color name="system_neutral1_100">#ffffff</color>
-    <color name="system_neutral1_200">#babac9</color>
-    <color name="system_neutral1_300">#babac9</color>
+    <color name="system_neutral1_200">#babaca</color>
+    <color name="system_neutral1_300">#babaca</color>
     <color name="system_neutral1_400">@*android:color/accent_material_dark</color>
     <color name="system_neutral1_500">@*android:color/button_material_light</color>
     <color name="system_neutral1_600">@*android:color/button_material_dark</color>
@@ -263,8 +263,8 @@
     <color name="system_neutral2_10">#ffffff</color>
     <color name="system_neutral2_50">#ffffff</color>
     <color name="system_neutral2_100">#ffffff</color>
-    <color name="system_neutral2_200">#babac9</color>
-    <color name="system_neutral2_300">#babac9</color>
+    <color name="system_neutral2_200">#babaca</color>                                               <!-- testo grey -->
+    <color name="system_neutral2_300">#babaca</color>
     <color name="system_neutral2_400">@*android:color/accent_material_dark</color>
     <color name="system_neutral2_500">@*android:color/button_material_light</color>
     <color name="system_neutral2_600">@*android:color/button_material_dark</color>
