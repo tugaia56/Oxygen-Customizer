@@ -22,7 +22,7 @@
     <color name="background_material_dark">@*android:color/background_dark</color>
     <color name="keyguard_avatar_frame_shadow_color">@*android:color/background_dark</color>
     <color name="legacy_primary">@*android:color/background_dark</color>
-    <color name="accent_material_light">@*android:color/holo_blue_light</color>
+    <color name="accent_material_light">@*android:color/accent_material_dark</color>
     <color name="holo_blue_dark">@*android:color/accent_material_dark</color>
     <color name="holo_green_light">@*android:color/accent_material_dark</color>
     <color name="holo_green_dark">@*android:color/accent_material_dark</color>
@@ -38,7 +38,7 @@
     <color name="system_accent1_300">#ffffffff</color>                                              <!-- sfondo switch piccolo attivo -->
     <color name="system_accent1_400">@*android:color/accent_material_dark</color>
     <color name="system_accent1_500">@*android:color/accent_material_dark</color>
-    <color name="system_accent1_600">@*android:color/holo_blue_light</color>                        <!-- tab disattivato e sfondo switch piccolo  disattivato -->
+    <color name="system_accent1_600">@*android:color/accent_material_dark</color>                        <!-- tab disattivato e sfondo switch piccolo  disattivato -->
     <color name="system_accent1_900">@*android:color/background_dark</color>
     <color name="system_accent1_1000">@*android:color/background_dark</color>
     <color name="system_accent2_100">@*android:color/accent_material_dark</color>                   <!-- card e sfondo titolo accent -->
