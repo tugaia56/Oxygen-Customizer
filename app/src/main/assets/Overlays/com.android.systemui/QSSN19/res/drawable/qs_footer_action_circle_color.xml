@@ -14,7 +14,7 @@
                 <gradient
                     android:angle="315.0"
                     android:endColor="@*android:color/holo_blue_dark"
-                    android:startColor="@*android:color/holo_blue_light" />
+                    android:startColor="@*android:color/accent_material_dark" />
             </shape>
         </item>
     </ripple>
