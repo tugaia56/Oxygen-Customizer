@@ -27,7 +27,6 @@ import it.dhd.oxygencustomizer.xposed.XposedMods;
 public class NotificationTransparency extends XposedMods {
 
     private final static String listenPackage = SYSTEM_UI;
-    private final static String TAG = "Oxygen Customizer - Notification Transparency: ";
     private boolean notificationTransparency = false;
     private int notificationTransparencyValue = 25;
     private boolean hasOverlays = false;
@@ -49,10 +48,7 @@ public class NotificationTransparency extends XposedMods {
         Class<?> NotificationBackgroundView = findClass("com.android.systemui.statusbar.notification.row.NotificationBackgroundView", lpparam.classLoader);
         Class<?> ExpandableNotificationRow = findClass("com.android.systemui.statusbar.notification.row.ExpandableNotificationRow", lpparam.classLoader);
 
-        findAndHookMethod(NotificationBackgroundView,
-                "draw",
-                Canvas.class,
-                Drawable.class,
+        findAndHookMethod(NotificationBackgroundView, "draw", Canvas.class, Drawable.class,
                 new XC_MethodHook() {
                     @Override
                     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
@@ -63,10 +59,10 @@ public class NotificationTransparency extends XposedMods {
                         }
                     }
                 });
+
         findAndHookMethod(ExpandableNotificationRow, "updateBackgroundForGroupState", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                // blurColor
                 if (Build.VERSION.SDK_INT >= 35) return;
                 if (notificationTransparency && !hasOverlays) {
                     setBooleanField(param.thisObject, "mShowGroupBackgroundWhenExpanded", true);
@@ -76,15 +72,12 @@ public class NotificationTransparency extends XposedMods {
 
         try {
             Class<?> OpNotificationBackgroundView = findClass("com.oplus.systemui.statusbar.notification.row.NotificationBackgroundViewExtImp", lpparam.classLoader);
-            findAndHookMethod(OpNotificationBackgroundView,
-                    "drawBlur",
-                    new XC_MethodHook() {
-                        @Override
-                        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                            if (notificationTransparency || hasOverlays) param.setResult(false);
-                        }
-                    });
-
+            findAndHookMethod(OpNotificationBackgroundView, "drawBlur", new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    if (notificationTransparency || hasOverlays) param.setResult(false);
+                }
+            });
         } catch (Throwable t) {
             log("ERROR IN OpNotificationBackgroundView " + t.getMessage());
         }
@@ -94,44 +87,25 @@ public class NotificationTransparency extends XposedMods {
 
     private void fixNotificationColorA14(XC_LoadPackage.LoadPackageParam loadPackageParam) {
         if (Build.VERSION.SDK_INT < 34) return;
-
         try {
             Class<?> ActivatableNotificationViewClass = findClass(SYSTEM_UI + ".statusbar.notification.row.ActivatableNotificationView", loadPackageParam.classLoader);
             Class<?> NotificationBackgroundViewClass = findClass(SYSTEM_UI + ".statusbar.notification.row.NotificationBackgroundView", loadPackageParam.classLoader);
             Class<?> FooterViewClass = findClassIfExists(SYSTEM_UI + ".statusbar.notification.footer.ui.view.FooterView", loadPackageParam.classLoader);
-            if (FooterViewClass == null) {
+            if (FooterViewClass == null)
                 FooterViewClass = findClass(SYSTEM_UI + ".statusbar.notification.row.FooterView", loadPackageParam.classLoader);
-            }
 
             XC_MethodHook removeNotificationTint = new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) {
                     if (!hasOverlays) return;
-
                     View notificationBackgroundView = (View) getObjectField(param.thisObject, "mBackgroundNormal");
-
-                    try {
-                        setObjectField(param.thisObject, "mCurrentBackgroundTint", param.args[0]);
-                    } catch (Throwable ignored) {
-                    }
-
-                    try {
-                        callMethod(getObjectField(notificationBackgroundView, "mBackground"), "clearColorFilter");
-                    } catch (Throwable ignored) {
-                    }
-                    try {
-                        callMethod(notificationBackgroundView, "setColorFilter", 0);
-                    } catch (Throwable ignored) {
-                    }
-
-                    try {
-                        setObjectField(notificationBackgroundView, "mTintColor", 0);
-                    } catch (Throwable ignored) {}
-
+                    try { setObjectField(param.thisObject, "mCurrentBackgroundTint", param.args[0]); } catch (Throwable ignored) {}
+                    try { callMethod(getObjectField(notificationBackgroundView, "mBackground"), "clearColorFilter"); } catch (Throwable ignored) {}
+                    try { callMethod(notificationBackgroundView, "setColorFilter", 0); } catch (Throwable ignored) {}
+                    try { setObjectField(notificationBackgroundView, "mTintColor", 0); } catch (Throwable ignored) {}
                     if (notificationBackgroundView != null) notificationBackgroundView.invalidate();
                 }
             };
-
             hookAllMethods(ActivatableNotificationViewClass, "setBackgroundTintColor", removeNotificationTint);
             hookAllMethods(ActivatableNotificationViewClass, "updateBackgroundTint", removeNotificationTint);
 
@@ -139,51 +113,26 @@ public class NotificationTransparency extends XposedMods {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) {
                     if (!hasOverlays) return;
-
-                    try {
-                        setObjectField(param.thisObject, "mTintColor", 0);
-                    } catch (Throwable ignored) {}
+                    try { setObjectField(param.thisObject, "mTintColor", 0); } catch (Throwable ignored) {}
                 }
             };
-
-            try {
-                hookAllMethods(NotificationBackgroundViewClass, "setCustomBackground$1", replaceTintColor);
-            } catch (Throwable t) {
-                log("setCustomBackground$1" + t);
-            }
-
-            try {
-                hookAllMethods(NotificationBackgroundViewClass, "setCustomBackground", replaceTintColor);
-            } catch (Throwable t) {
-                log("setCustomBackground" + t);
-            }
+            try { hookAllMethods(NotificationBackgroundViewClass, "setCustomBackground$1", replaceTintColor); } catch (Throwable t) { log("setCustomBackground$1" + t); }
+            try { hookAllMethods(NotificationBackgroundViewClass, "setCustomBackground", replaceTintColor); } catch (Throwable t) { log("setCustomBackground" + t); }
 
             XC_MethodHook removeButtonTint = new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) {
                     if (!hasOverlays) return;
-
                     Button mClearAllButton = (Button) getObjectField(param.thisObject, "mClearAllButton");
                     Button mManageButton = (Button) getObjectField(param.thisObject, "mManageButton");
-
                     mClearAllButton.getBackground().clearColorFilter();
                     mManageButton.getBackground().clearColorFilter();
-
                     mClearAllButton.invalidate();
                     mManageButton.invalidate();
                 }
             };
-
-            try {
-                hookAllMethods(FooterViewClass, "updateColors", removeButtonTint);
-            } catch (Throwable t) {
-                log("updateColors" + t);
-            }
-            try {
-                hookAllMethods(FooterViewClass, "updateColors$3", removeButtonTint);
-            } catch (Throwable t) {
-                log("updateColors$3" + t);
-            }
+            try { hookAllMethods(FooterViewClass, "updateColors", removeButtonTint); } catch (Throwable t) { log("updateColors" + t); }
+            try { hookAllMethods(FooterViewClass, "updateColors$3", removeButtonTint); } catch (Throwable t) { log("updateColors$3" + t); }
         } catch (Throwable throwable) {
             log(throwable);
         }
@@ -194,4 +143,3 @@ public class NotificationTransparency extends XposedMods {
         return listenPackage.equals(packageName);
     }
 }
-

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Hardcoded DST accent values — no FabricatedUtil dependency at boot -->
+    <color name="coui_numeric_keyboard_border_color">@*android:color/system_accent1_600</color>
+    <color name="coui_numeric_keyboard_inner_gradient_color_1">@*android:color/system_accent1_600</color>
+    <color name="coui_numeric_keyboard_inner_gradient_color_2">@*android:color/system_accent1_600</color>
+    <color name="coui_numeric_keyboard_upper_inner_shadow_color">@*android:color/system_accent1_600</color>
+    <color name="coui_numeric_keyboard_outer_gradient_color_1">@*android:color/system_accent1_600</color>
+    <color name="coui_numeric_keyboard_outer_gradient_color_2">@*android:color/system_accent1_600</color>
+    <color name="coui_numeric_keyboard_outer_gradient_color_3">@*android:color/system_accent1_600</color>
+</resources>

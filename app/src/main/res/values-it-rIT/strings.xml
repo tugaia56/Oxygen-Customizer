@@ -112,8 +112,8 @@
     <!-- Menu Strings -->
     <string name="restart_scopes">Riavvia gli scopi</string>
     <string name="restart_module">Riavvia i processi</string>
-    <string name="restart_page_scope">Riavvia solo lo scopo di questa pagina</string>
-    <string name="restart_scope_message">Are you sure you want to restart all scoped processes except the system framework?\nUse this if the module isn\'t working!\nMake sure all the relevant scopes are checked!</string>
+    <string name="restart_page_scope">Riavvia ambito di questa pagina</string>
+    <string name="restart_scope_message">Sei sicuro di voler riavviare tutti i processi con ambito, eccetto il framework di sistema?\nUsa questa opzione se il modulo non funziona!n\Assicurati che tutti gli ambiti pertinenti siano selezionati!</string>
     <string name="add_notification">Aggiungi notifica</string>
     <!-- NavBar Strings -->
     <string name="navbar_ui">UI</string>
@@ -159,6 +159,8 @@
     <string name="statusbar_notifications_transparency">Trasparenza Notifiche</string>
     <string name="statusbar_notification_transparency">Trasparenza notifica</string>
     <string name="statusbar_notification_transparency_value">Valore della trasparenza</string>
+    <string name="nfn24_transparency_title">Stile Outline Trasparente</string>
+    <string name="nfn24_transparency_value">Trasparenza sfondo</string>
     <string name="statusbar_notification_count">Mostra conteggio notifiche</string>
     <string name="statusbar_notifications_related">Impostazioni notifiche</string>
     <string name="remove_charging_complete_notification_title">Rimuovi notifica carica completa</string>
@@ -1507,4 +1509,22 @@
     <string name="qs_separate_rows">Righe</string>
     <string name="width">Larghezza</string>
     <string name="height">Altezza</string>
+    <string name="dark_shadow_section_colors">Colori</string>
+    <string name="dark_shadow_section_color_presets">Preset Colori</string>
+    <string name="dark_shadow_apply_theme">Applica Tema</string>
+    <string name="dark_shadow_apply_theme_summary">Riavvia SystemUI e applica le modifiche</string>
+    <string name="dark_shadow_section_presets">Preset</string>
+    <string name="dark_shadow_color_background">Sfondo</string>
+    <string name="dark_shadow_color_accent">Accento</string>
+    <string name="dark_shadow_color_accent_light">Accento Chiaro</string>
+    <string name="dark_shadow_color_ripple_accent">Ripple Accento</string>
+    <string name="dark_shadow_pick_color">Scegli Colore</string>
+    <string name="dark_shadow_disable">Disabilita</string>
+    <string name="dark_shadow_preset_background">Preset Sfondo</string>
+    <string name="dark_shadow_preset_accent">Preset Accento</string>
+    <string name="dark_shadow_preset_pin">Preset Tastierino PIN</string>
+    <string name="dark_shadow_restart_systemui">Riavvia SystemUI</string>
+    <string name="dark_shadow_none">Nessuno</string>
+    <string name="dark_shadow_restart_summary">Applica le modifiche al tema</string>
+    <string name="dark_shadow_custom">Personalizzato</string>
 </resources>

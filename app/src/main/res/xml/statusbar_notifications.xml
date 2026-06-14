@@ -57,6 +57,7 @@
 
     </it.dhd.oneplusui.preference.OplusPreferenceCategory>
 
+
     <it.dhd.oneplusui.preference.OplusPreferenceCategory
         android:title="@string/statusbar_notifications_related"
         app:iconSpaceReserved="false">

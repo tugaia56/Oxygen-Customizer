@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="language_picker_item_text_color">#fff1f3f4</color>
+    <color name="language_picker_item_text_color_secondary">#ffbdc1c6</color>
+    <color name="notification_action_button_text_color">#deffffff</color>
+    <color name="notification_expand_button_pill_color">#0affffff</color>
+    <color name="side_fps_text_color">#ffffffff</color>
+</resources>

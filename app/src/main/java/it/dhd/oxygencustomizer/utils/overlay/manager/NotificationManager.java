@@ -14,7 +14,10 @@ public class NotificationManager {
         OverlayUtil.enableOverlayExclusiveInCategory("OxygenCustomizerComponentNFN" + n + ".overlay");
         if (PreferenceHelper.getModulePrefs() != null) {
             boolean hasOverlays = PreferenceHelper.getModulePrefs().getBoolean("hasNotificationOverlays", false);
-            PreferenceHelper.getModulePrefs().edit().putBoolean("hasNotificationOverlays", true).apply();
+            PreferenceHelper.getModulePrefs().edit()
+                    .putBoolean("hasNotificationOverlays", true)
+                    .putInt("activeNFN", n)
+                    .apply();
             if (!hasOverlays) AppUtils.restartScope("systemui");
         }
         if (!OverlayUtil.isOverlayEnabled("OxygenCustomizerComponentCRN1.overlay") || !OverlayUtil.isOverlayEnabled("OxygenCustomizerComponentCRN1.overlay")) {
@@ -26,7 +29,10 @@ public class NotificationManager {
         OverlayUtil.disableOverlay("OxygenCustomizerComponentNFN" + n + ".overlay");
         if (PreferenceHelper.getModulePrefs() != null) {
             boolean hasOverlays = PreferenceHelper.getModulePrefs().getBoolean("hasNotificationOverlays", false);
-            PreferenceHelper.getModulePrefs().edit().putBoolean("hasNotificationOverlays", false).apply();
+            PreferenceHelper.getModulePrefs().edit()
+                    .putBoolean("hasNotificationOverlays", false)
+                    .putInt("activeNFN", -1)
+                    .apply();
             if (hasOverlays) AppUtils.restartScope("systemui");
         }
     }

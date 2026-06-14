@@ -64,6 +64,9 @@ public class NotificationStyle extends BaseFragment {
         notif_list.add(new NotificationModel("iOS", R.drawable.notif_ios));
         notif_list.add(new NotificationModel("Transparent", R.drawable.notif_transparent_fully));
         notif_list.add(new NotificationModel("Thin Outline Transparent", R.drawable.notif_transparent_fully_thin_outline));
+        notif_list.add(new NotificationModel("Outline Transparent 25%", R.drawable.notif_outline_transparent));
+        notif_list.add(new NotificationModel("Outline Transparent 50%", R.drawable.notif_outline_transparent_low));
+        notif_list.add(new NotificationModel("Outline Transparent 75%", R.drawable.notif_outline_transparent_high));
 
         return new NotificationAdapter(requireContext(), notif_list, loadingDialog);
     }

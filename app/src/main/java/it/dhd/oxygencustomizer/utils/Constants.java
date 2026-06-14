@@ -811,6 +811,7 @@ public final class Constants {
                     CLEAR_BUTTON_ICON_COLOR
             };
             public static final String CUSTOM_NOTIFICATION_APPS = "custom_notification_expansion";
+            public static final String NFN24_TRANSPARENCY_VALUE = "nfn24_transparency_value";
         }
 
         public static class Statusbar {
