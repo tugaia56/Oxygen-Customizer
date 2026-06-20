@@ -1394,6 +1394,7 @@
     <string name="dark_shadow_section_apply_theme">Applica Tema</string>
     <string name="dark_shadow_apply_theme">Applica Tema</string>
     <string name="dark_shadow_apply_theme_summary">Restart SystemUI and apply changes</string>
+	<string name="dark_shadow_section_presets">Preset</string>
     <string name="dark_shadow_color_background">Background</string>
     <string name="dark_shadow_color_accent">Accent</string>
     <string name="dark_shadow_color_accent_light">Accent Light</string>
