@@ -1279,7 +1279,7 @@
     <string name="dark_shadow_color_background">Sfondo</string>
     <string name="dark_shadow_color_accent">Accento Scuro</string>
     <string name="dark_shadow_color_accent_light">Accento Chiaro</string>
-    <string name="dark_shadow_color_ripple_accent">Accento Trasparenza Alpha</string>
+    <string name="dark_shadow_color_ripple_accent">Accento Alpha</string>
     <string name="dark_shadow_pick_color">Scegli Colore</string>
     <string name="dark_shadow_disable">Disabilita</string>
     <string name="dark_shadow_preset_background">Preset Sfondo</string>

@@ -1398,7 +1398,7 @@
     <string name="dark_shadow_color_background">Background</string>
     <string name="dark_shadow_color_accent">Accent Dark</string>
     <string name="dark_shadow_color_accent_light">Accent Light</string>
-    <string name="dark_shadow_color_ripple_accent">Accent Alpha Transparency</string>
+    <string name="dark_shadow_color_ripple_accent">Accent Alpha</string>
     <string name="dark_shadow_pick_color">Pick Color</string>
     <string name="dark_shadow_disable">Disable</string>
     <string name="dark_shadow_preset_background">Background Preset</string>
