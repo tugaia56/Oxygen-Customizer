@@ -1381,9 +1381,9 @@
     <string name="theme_customization_toast_frame_summary">Change toast notification style</string>
     <string name="theme_customization_spinner_style_title">Spinner style</string>
     <string name="theme_customization_spinner_style_summary">Set custom spinner style</string>
-    <string name="dark_shadow_title" translatable="false">Dark Shadow Theme</string>
 
     <!-- Dark Shadow Theme Strings -->
+    <string name="dark_shadow_title" translatable="false">Dark Shadow Theme</string>
     <string name="dark_shadow_ui_style_summary">The theme includes separately selectable Background and Accent colors.</string>
     <string name="dark_shadow_enable_theme">Enable theme</string>
     <string name="dark_shadow_footer">Dark Shadow Theme is a substratum theme for OxygenOS.\nWe are working together with the developer of the Theme to bring the theme in Oxygen Customizer.</string>
@@ -1391,14 +1391,14 @@
     <string name="dark_shadow_section_color_presets">Color Presets</string>
     <string name="dark_shadow_section_utility">Utility</string>
     <string name="dark_shadow_preset_rvd">Round Volume Button Preset</string>
-    <string name="dark_shadow_section_apply_theme">Applica Tema</string>
-    <string name="dark_shadow_apply_theme">Applica Tema</string>
+    <string name="dark_shadow_section_apply_theme">Apply Theme</string>
+    <string name="dark_shadow_apply_theme">Apply Theme</string>
     <string name="dark_shadow_apply_theme_summary">Restart SystemUI and apply changes</string>
 	<string name="dark_shadow_section_presets">Preset</string>
     <string name="dark_shadow_color_background">Background</string>
-    <string name="dark_shadow_color_accent">Accent</string>
+    <string name="dark_shadow_color_accent">Accent Dark</string>
     <string name="dark_shadow_color_accent_light">Accent Light</string>
-    <string name="dark_shadow_color_ripple_accent">Ripple Accent</string>
+    <string name="dark_shadow_color_ripple_accent">Accent Alpha Transparency</string>
     <string name="dark_shadow_pick_color">Pick Color</string>
     <string name="dark_shadow_disable">Disable</string>
     <string name="dark_shadow_preset_background">Background Preset</string>

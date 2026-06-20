@@ -1264,9 +1264,31 @@
     <string name="theme_customization_spinner_style_title">Stile barra di avanzamento circolare</string>
     <string name="theme_customization_spinner_style_summary">Imposta barra di avanzamento circolare personalizzata</string>
     <!-- Dark Shadow Theme Strings -->
+	
     <string name="dark_shadow_ui_style_summary">Il tema include colori di sfondo e di accento selezionabili separatamente.</string>
     <string name="dark_shadow_enable_theme">Abilita tema</string>
     <string name="dark_shadow_footer">Dark Shadow Theme è un tema Substratum per OxygenOS.\nStiamo lavorando con lo sviluppatore del tema per includerlo in Oxygen Customizer.</string>
+    <string name="dark_shadow_section_colors">Colori</string>
+    <string name="dark_shadow_section_color_presets">Preset Colore</string>
+    <string name="dark_shadow_section_utility">Utility</string>
+    <string name="dark_shadow_preset_rvd">Preset Pulsante Rotondo Volume</string>
+    <string name="dark_shadow_section_apply_theme">Applica Tema</string>
+    <string name="dark_shadow_apply_theme">Applica Tema</string>
+    <string name="dark_shadow_apply_theme_summary">Riavvia SystemUI e applica le modifiche</string>
+    <string name="dark_shadow_section_presets">Preset</string>
+    <string name="dark_shadow_color_background">Sfondo</string>
+    <string name="dark_shadow_color_accent">Accento Scuro</string>
+    <string name="dark_shadow_color_accent_light">Accento Chiaro</string>
+    <string name="dark_shadow_color_ripple_accent">Accento Trasparenza Alpha</string>
+    <string name="dark_shadow_pick_color">Scegli Colore</string>
+    <string name="dark_shadow_disable">Disabilita</string>
+    <string name="dark_shadow_preset_background">Preset Sfondo</string>
+    <string name="dark_shadow_preset_accent">Preset Accento</string>
+    <string name="dark_shadow_preset_pin">Preset Tastierino PIN</string>
+    <string name="dark_shadow_restart_systemui">Riavvia SystemUI</string>
+    <string name="dark_shadow_none">Nessuno</string>
+    <string name="dark_shadow_restart_summary">Applica le modifiche al tema</string>
+    <string name="dark_shadow_custom">Personalizzato</string>
     <!-- Settings Icons -->
     <string name="settings_icons_customized">Stock Personalizzato</string>
     <string name="settings_bg_color">Colore sfondo</string>
@@ -1509,22 +1531,4 @@
     <string name="qs_separate_rows">Righe</string>
     <string name="width">Larghezza</string>
     <string name="height">Altezza</string>
-    <string name="dark_shadow_section_colors">Colori</string>
-    <string name="dark_shadow_section_color_presets">Preset Colori</string>
-    <string name="dark_shadow_apply_theme">Applica Tema</string>
-    <string name="dark_shadow_apply_theme_summary">Riavvia SystemUI e applica le modifiche</string>
-    <string name="dark_shadow_section_presets">Preset</string>
-    <string name="dark_shadow_color_background">Sfondo</string>
-    <string name="dark_shadow_color_accent">Accento</string>
-    <string name="dark_shadow_color_accent_light">Accento Chiaro</string>
-    <string name="dark_shadow_color_ripple_accent">Ripple Accento</string>
-    <string name="dark_shadow_pick_color">Scegli Colore</string>
-    <string name="dark_shadow_disable">Disabilita</string>
-    <string name="dark_shadow_preset_background">Preset Sfondo</string>
-    <string name="dark_shadow_preset_accent">Preset Accento</string>
-    <string name="dark_shadow_preset_pin">Preset Tastierino PIN</string>
-    <string name="dark_shadow_restart_systemui">Riavvia SystemUI</string>
-    <string name="dark_shadow_none">Nessuno</string>
-    <string name="dark_shadow_restart_summary">Applica le modifiche al tema</string>
-    <string name="dark_shadow_custom">Personalizzato</string>
 </resources>
