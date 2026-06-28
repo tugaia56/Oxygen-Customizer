@@ -7,8 +7,10 @@ import static it.dhd.oxygencustomizer.utils.DarkShadowUtils.ACCENT3;
 import static it.dhd.oxygencustomizer.utils.DarkShadowUtils.BACKGROUND;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
+import android.util.TypedValue;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -110,10 +112,41 @@ public class DarkShadowThemeFragment extends BaseFragment {
     private static final String[] PIN_OVERLAYS = {"DSTPINAccent", "DSTPINAccentShade", "DSTPINRainbow"};
 
 
-    // ── Round Volume Button 3 Dots presets (com.android.systemui) ─────────────
+    // ── Circular Progress Bar presets (android) ──────────────────────────────
+    private static final String PREF_CPB = "DST_PRESET_CPB";
+    private static final String[] CPB_NAMES    = {
+        "Aurora Theme", "Arrow", "Radioactive", "Sprite Theme", "Stars"
+    };
+    private static final String[] CPB_OVERLAYS = {
+        "DSTCPB1", "DSTCPB2", "DSTCPB3", "DSTCPB4", "DSTCPB5"
+    };
+
+    // ── Dialog style presets (android) ───────────────────────────────────────
+    private static final String PREF_DLG = "DST_PRESET_DLG";
+    private static final String[] DLG_NAMES    = {
+        "Dialog Higher Transparent", "Dialog Higher Transparent Outlined",
+        "Dialog Lower Transparent",  "Dialog Lower Transparent Outlined",
+        "Dialog Medium Transparent", "Dialog Medium Transparent Outlined",
+        "Dialog Solid",              "Dialog Solid Outlined"
+    };
+    private static final String[] DLG_OVERLAYS = {
+        "DSTDHT", "DSTDHTO", "DSTDLT", "DSTDLYO", "DSTDMT", "DSTDMTO", "DSTDS", "DSTDSO"
+    };
+
+    // ── Volume Button 3 Dots presets (Round + Square, com.android.systemui) ───
     private static final String PREF_RVD = "DST_PRESET_RVD";
-    private static final String[] RVD_NAMES    = {"Accent", "Accent Shade", "Dark Gray", "Light Gray", "Outlined", "Semi Transparent", "Outlined Transparent"};
-    private static final String[] RVD_OVERLAYS = {"DSTRVDAccent", "DSTRVDAccentShade", "DSTRVDDarkGray", "DSTRVDLightGray", "DSTRVDOutlined", "DSTRVDSemiTrasp", "DSTRVDOutlinedTrasp"};
+    private static final String[] RVD_NAMES    = {
+        "Round Accent", "Round Accent Shade", "Round Dark Gray", "Round Light Gray", "Round White",
+        "Round Outlined", "Round Semi Transparent", "Round Outlined Transparent",
+        "Square Accent", "Square Accent Shade", "Square Dark Gray", "Square Light Gray", "Square White",
+        "Square Outlined", "Square Semi Transparent", "Square Outlined Transparent"
+    };
+    private static final String[] RVD_OVERLAYS = {
+        "DSTRVDAccent", "DSTRVDAccentShade", "DSTRVDDarkGray", "DSTRVDLightGray", "DSTRVDWhite",
+        "DSTRVDOutlined", "DSTRVDSemiTrasp", "DSTRVDOutlinedTrasp",
+        "DSTSVDAccent", "DSTSVDAccentShade", "DSTSVDDarkGray", "DSTSVDLightGray", "DSTSVDWhite",
+        "DSTSVDOutlined", "DSTSVDSemiTrasp", "DSTSVDOutlinedTrasp"
+    };
 
     // ── UI ─────────────────────────────────────────────────────────────────────
     private FragmentAppListBinding binding;
@@ -193,6 +226,11 @@ public class DarkShadowThemeFragment extends BaseFragment {
         binding.progress.setVisibility(View.GONE);
         binding.searchView.setVisibility(View.GONE);
 
+        binding.appFunctionSwitch.forcePosition("center");
+        View switchContainer = binding.appFunctionSwitch.findViewById(R.id.container);
+        if (switchContainer != null) {
+            switchContainer.setBackgroundResource(R.drawable.dst_enable_switch_bg);
+        }
         binding.appFunctionSwitch.setTitle(getString(R.string.dark_shadow_enable_theme));
         binding.appFunctionSwitch.setSwitchChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
@@ -422,10 +460,12 @@ public class DarkShadowThemeFragment extends BaseFragment {
     }
 
     /**
-     * PIN button preset: overlay APK based (has drawables, needs OverlayUtil).
+     * PIN/RVD/SVD button preset: overlay APK based (has drawables, needs OverlayUtil).
+     * @param competingPrefKey se non null, l'overlay salvato in questa pref viene disabilitato
+     *                         automaticamente quando si attiva un nuovo overlay (mutua esclusione).
      */
     private void showOverlayPresetDialog(String title, String[] names, String[] overlayNames,
-                                         String prefKey, Runnable onChanged) {
+                                         String prefKey, String competingPrefKey, Runnable onChanged) {
         String current = OCPreferences.getString(prefKey, null);
         int currentIdx = -1;
         for (int i = 0; i < overlayNames.length; i++) {
@@ -438,8 +478,17 @@ public class DarkShadowThemeFragment extends BaseFragment {
                 .setPositiveButton(android.R.string.ok, (d, w) -> {
                     if (selected[0] < 0) return;
                     loadingDialog.show(getString(R.string.loading_dialog_wait));
+                    // Disabilita overlay precedente dello stesso gruppo
                     if (current != null) {
                         OverlayUtil.disableOverlay("OxygenCustomizerComponent" + current + ".overlay");
+                    }
+                    // Disabilita overlay del gruppo concorrente (mutua esclusione RVD ↔ SVD)
+                    if (competingPrefKey != null) {
+                        String competing = OCPreferences.getString(competingPrefKey, null);
+                        if (competing != null) {
+                            OverlayUtil.disableOverlay("OxygenCustomizerComponent" + competing + ".overlay");
+                            OCPreferences.putString(competingPrefKey, null);
+                        }
                     }
                     String newOverlay = overlayNames[selected[0]];
                     // Disable old fabricated PIN colors if switching away from an accent preset
@@ -616,11 +665,11 @@ public class DarkShadowThemeFragment extends BaseFragment {
     }
 
 
-    // ── Utility: PIN preset + QS Edit Button + Round Volume Button ────────────
+    // ── Utility: PIN + Dialog + CPB + Volume Button ───────────────────────────
 
     private class DstUtilityAdapter extends RecyclerView.Adapter<DstUtilityAdapter.ViewHolder> {
 
-        private static final int COUNT = 2;
+        private static final int COUNT = 4;
 
         @NonNull @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -632,6 +681,10 @@ public class DarkShadowThemeFragment extends BaseFragment {
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             holder.summary.setVisibility(View.VISIBLE);
+            holder.icon.setVisibility(View.VISIBLE);
+            TypedValue tv = new TypedValue();
+            requireContext().getTheme().resolveAttribute(android.R.attr.colorAccent, tv, true);
+            holder.icon.setImageTintList(ColorStateList.valueOf(tv.data));
             if (position == 0) {
                 holder.container.setBackgroundResource(R.drawable.preference_background_top);
             } else if (position == COUNT - 1) {
@@ -642,6 +695,7 @@ public class DarkShadowThemeFragment extends BaseFragment {
 
             switch (position) {
                 case 0: {
+                    holder.icon.setImageResource(R.drawable.ic_lock);
                     holder.title.setText(R.string.dark_shadow_preset_pin);
                     String savedOverlay = OCPreferences.getString(PREF_PIN, null);
                     String displayName  = getString(R.string.dark_shadow_none);
@@ -654,11 +708,48 @@ public class DarkShadowThemeFragment extends BaseFragment {
                     holder.container.setOnClickListener(v ->
                             showOverlayPresetDialog(
                                     getString(R.string.dark_shadow_preset_pin),
-                                    PIN_NAMES, PIN_OVERLAYS, PREF_PIN,
+                                    PIN_NAMES, PIN_OVERLAYS, PREF_PIN, null,
                                     () -> { if (mUtilityAdapter != null) mUtilityAdapter.notifyItemChanged(0); }));
                     break;
                 }
+                case 1: {
+                    holder.icon.setImageResource(R.drawable.ic_ui_styles);
+                    holder.title.setText(R.string.dark_shadow_preset_dlg);
+                    String savedOverlay = OCPreferences.getString(PREF_DLG, null);
+                    String displayName  = getString(R.string.dark_shadow_none);
+                    if (savedOverlay != null) {
+                        for (int i = 0; i < DLG_OVERLAYS.length; i++) {
+                            if (DLG_OVERLAYS[i].equals(savedOverlay)) { displayName = DLG_NAMES[i]; break; }
+                        }
+                    }
+                    holder.summary.setText(displayName);
+                    holder.container.setOnClickListener(v ->
+                            showOverlayPresetDialog(
+                                    getString(R.string.dark_shadow_preset_dlg),
+                                    DLG_NAMES, DLG_OVERLAYS, PREF_DLG, null,
+                                    () -> { if (mUtilityAdapter != null) mUtilityAdapter.notifyItemChanged(1); }));
+                    break;
+                }
+                case 2: {
+                    holder.icon.setImageResource(R.drawable.arc_progress);
+                    holder.title.setText(R.string.dark_shadow_preset_cpb);
+                    String savedOverlay = OCPreferences.getString(PREF_CPB, null);
+                    String displayName  = getString(R.string.dark_shadow_none);
+                    if (savedOverlay != null) {
+                        for (int i = 0; i < CPB_OVERLAYS.length; i++) {
+                            if (CPB_OVERLAYS[i].equals(savedOverlay)) { displayName = CPB_NAMES[i]; break; }
+                        }
+                    }
+                    holder.summary.setText(displayName);
+                    holder.container.setOnClickListener(v ->
+                            showOverlayPresetDialog(
+                                    getString(R.string.dark_shadow_preset_cpb),
+                                    CPB_NAMES, CPB_OVERLAYS, PREF_CPB, null,
+                                    () -> { if (mUtilityAdapter != null) mUtilityAdapter.notifyItemChanged(2); }));
+                    break;
+                }
                 default: {
+                    holder.icon.setImageResource(R.drawable.ic_sysui_volume);
                     holder.title.setText(R.string.dark_shadow_preset_rvd);
                     String savedOverlay = OCPreferences.getString(PREF_RVD, null);
                     String displayName  = getString(R.string.dark_shadow_none);
@@ -671,8 +762,8 @@ public class DarkShadowThemeFragment extends BaseFragment {
                     holder.container.setOnClickListener(v ->
                             showOverlayPresetDialog(
                                     getString(R.string.dark_shadow_preset_rvd),
-                                    RVD_NAMES, RVD_OVERLAYS, PREF_RVD,
-                                    () -> { if (mUtilityAdapter != null) mUtilityAdapter.notifyItemChanged(1); }));
+                                    RVD_NAMES, RVD_OVERLAYS, PREF_RVD, null,
+                                    () -> { if (mUtilityAdapter != null) mUtilityAdapter.notifyItemChanged(3); }));
                     break;
                 }
             }
@@ -682,13 +773,14 @@ public class DarkShadowThemeFragment extends BaseFragment {
 
         class ViewHolder extends RecyclerView.ViewHolder {
             final RelativeLayout container;
-            final TextView title, summary;
+            final ImageView       icon;
+            final TextView        title, summary;
             ViewHolder(@NonNull View v) {
                 super(v);
                 container = v.findViewById(R.id.container);
+                icon      = v.findViewById(R.id.icon);
                 title     = v.findViewById(R.id.title);
                 summary   = v.findViewById(R.id.summary);
-                v.findViewById(R.id.icon).setVisibility(View.GONE);
             }
         }
     }

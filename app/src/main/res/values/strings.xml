@@ -1390,7 +1390,10 @@
     <string name="dark_shadow_section_colors">Colors</string>
     <string name="dark_shadow_section_color_presets">Color Presets</string>
     <string name="dark_shadow_section_utility">Utility</string>
-    <string name="dark_shadow_preset_rvd">Round Volume Button Preset</string>
+    <string name="dark_shadow_preset_dlg">Dialog Style Preset</string>
+    <string name="dark_shadow_preset_cpb">Circular Progress Bar Preset</string>
+    <string name="dark_shadow_preset_rvd">Volume Adjust Icon Preset</string>
+    <string name="dark_shadow_preset_svd">Square Volume Button Preset</string>
     <string name="dark_shadow_section_apply_theme">Apply Theme</string>
     <string name="dark_shadow_apply_theme">Apply Theme</string>
     <string name="dark_shadow_apply_theme_summary">Restart SystemUI and apply changes</string>

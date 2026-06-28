@@ -1263,15 +1263,18 @@
     <string name="theme_customization_toast_frame_summary">Cambia lo stile di notifica toast</string>
     <string name="theme_customization_spinner_style_title">Stile barra di avanzamento circolare</string>
     <string name="theme_customization_spinner_style_summary">Imposta barra di avanzamento circolare personalizzata</string>
-    <!-- Dark Shadow Theme Strings -->
 	
+    <!-- Dark Shadow Theme Strings -->
     <string name="dark_shadow_ui_style_summary">Il tema include colori di sfondo e di accento selezionabili separatamente.</string>
     <string name="dark_shadow_enable_theme">Abilita tema</string>
     <string name="dark_shadow_footer">Dark Shadow Theme è un tema Substratum per OxygenOS.\nStiamo lavorando con lo sviluppatore del tema per includerlo in Oxygen Customizer.</string>
     <string name="dark_shadow_section_colors">Colori</string>
     <string name="dark_shadow_section_color_presets">Preset Colore</string>
     <string name="dark_shadow_section_utility">Utility</string>
-    <string name="dark_shadow_preset_rvd">Preset Pulsante Rotondo Volume</string>
+    <string name="dark_shadow_preset_dlg">Preset Stile Dialogo</string>
+    <string name="dark_shadow_preset_cpb">Preset Barra Progresso Circolare</string>
+    <string name="dark_shadow_preset_rvd">Preset Icona Volume Adjust</string>
+    <string name="dark_shadow_preset_svd">Preset Pulsante Volume Quadrato</string>
     <string name="dark_shadow_section_apply_theme">Applica Tema</string>
     <string name="dark_shadow_apply_theme">Applica Tema</string>
     <string name="dark_shadow_apply_theme_summary">Riavvia SystemUI e applica le modifiche</string>
@@ -1365,7 +1368,7 @@
     <string name="lockscreen_widgets_style3">Trasparente</string>
     <!-- LS Widgets Actions -->
     <string name="camera">Fotocamera</string>
-    <string name="clock_timer">Orologio/Timer</string>
+    <string name="clock_timer">Orologio\nTimer</string>
     <string name="calculator">Calcolatrice</string>
     <string name="gallery">Galleria</string>
     <string name="media">Lettore multimediale</string>

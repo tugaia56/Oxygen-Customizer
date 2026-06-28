@@ -95,3 +95,30 @@ NB -> NavBar Icons
 9 - Tecno
 
 USB -> USB Dialog
+
+DSTPIN -> keyboard PIN
+1 - DSTPINAccent
+2 - DSTPINAccentShade
+3 - DSTPINRainbow
+
+DSTRVD -> Round Volume Adjust
+1 - DSTRVDAccent
+2 - DSTRVDAccentShade
+3 - DSTRVDAccentShade
+4 - DSTRVDDarkGray
+5 - DSTRVDLightGray
+6 - DSTRVDOutlined
+7 - DSTRVDOutlinedTrasp
+8 - DSTRVDSemiTrasp
+9 - DSTRVDWhite
+
+DSTSVD -> Square Volume Adjust
+1 - DSTSVDAccent
+2 - DSTSVDAccentShade
+3 - DSTSVDAccentShade
+4 - DSTSVDDarkGray
+5 - DSTSVDLightGray
+6 - DSTSVDOutlined
+7 - DSTSVDOutlinedTrasp
+8 - DSTSVDSemiTrasp
+9 - DSTSVDWhite
