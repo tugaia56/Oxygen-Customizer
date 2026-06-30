@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Color applied at runtime via FabricatedUtil (color picker) -->
+    <color name="kgd_color_simple_lock_filled_rectangle_icon_color">@*android:color/accent_material_dark</color>				<!-- pallini attivi -->
+    <color name="kgd_color_simple_lock_outlined_rectangle_icon_color">#ffffffff</color>											<!-- pallini disattivi -->
 </resources>
