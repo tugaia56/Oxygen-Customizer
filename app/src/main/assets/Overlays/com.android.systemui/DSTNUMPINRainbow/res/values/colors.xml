@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="coui_numeric_keyboard_number_color">#ffff0000</color>			<!-- colore numero tasti -->
-
+    <!-- Color applied at runtime via FabricatedUtil (color picker) -->
 </resources>
