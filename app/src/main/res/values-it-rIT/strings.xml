@@ -1288,6 +1288,8 @@
     <string name="dark_shadow_preset_background">Preset Sfondo</string>
     <string name="dark_shadow_preset_accent">Preset Accento</string>
     <string name="dark_shadow_preset_pin">Preset Tastierino PIN</string>
+    <string name="dark_shadow_preset_pin_bg">Colore Sfondo</string>
+    <string name="dark_shadow_preset_pin_num">Colore Numeri</string>
     <string name="dark_shadow_restart_systemui">Riavvia SystemUI</string>
     <string name="dark_shadow_none">Nessuno</string>
     <string name="dark_shadow_restart_summary">Applica le modifiche al tema</string>

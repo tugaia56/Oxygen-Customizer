@@ -15,6 +15,19 @@ public final class DarkShadowUtils {
             new DarkShadowItem("ACCENT1", "Main Accent Dark", "xx",
                     new ArrayList<>() {{
                         add("accent_material_dark");
+                        add("holo_blue_light");
+                        // system_accent1 shades that reference accent_material_dark in OOS theme
+                        add("system_accent1_100"); add("system_accent1_200"); add("system_accent1_300");
+                        add("system_accent1_400"); add("system_accent1_500"); add("system_accent1_600");
+                        add("system_accent1_700");
+                        // system_accent2 shades (toggle track, etc.)
+                        add("system_accent2_100"); add("system_accent2_200"); add("system_accent2_300");
+                        add("system_accent2_400"); add("system_accent2_600"); add("system_accent2_700");
+                        add("system_accent2_800");
+                        // system_accent3 shades
+                        add("system_accent3_100"); add("system_accent3_200"); add("system_accent3_300");
+                        add("system_accent3_400"); add("system_accent3_500"); add("system_accent3_600");
+                        add("system_accent3_700"); add("system_accent3_800");
                     }},
                     new ArrayList<>() {{
                         add("android");

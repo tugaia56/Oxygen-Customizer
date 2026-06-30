@@ -62,7 +62,8 @@ public class DarkShadowThemeFragment extends BaseFragment {
     // ── Preference keys ────────────────────────────────────────────────────────
     private static final String PREF_BG  = "DST_PRESET_BG";
     private static final String PREF_AC  = "DST_PRESET_AC";
-    private static final String PREF_PIN = "DST_PRESET_PIN";
+    private static final String PREF_PIN     = "DST_PRESET_PIN";
+    private static final String PREF_PIN_NUM = "DST_PRESET_PIN_NUM";
     private static final String PREF_VAL_CUSTOM = "Custom";
 
     // ── Background presets: background_dark from type1b_*.xml ─────────────────
@@ -110,6 +111,10 @@ public class DarkShadowThemeFragment extends BaseFragment {
     // ── Keypad PIN button presets (com.android.systemui) ──────────────────────
     private static final String[] PIN_NAMES    = {"Accent", "Accent Shade", "Rainbow"};
     private static final String[] PIN_OVERLAYS = {"DSTPINAccent", "DSTPINAccentShade", "DSTPINRainbow"};
+
+    // ── Keypad PIN number color presets (com.android.systemui) ───────────────
+    private static final String[] PIN_NUM_NAMES    = {"Accent", "Accent Shade", "Rainbow"};
+    private static final String[] PIN_NUM_OVERLAYS = {"DSTNUMPINAccent", "DSTNUMPINAccentShade", "DSTNUMPINRainbow"};
 
 
     // ── Circular Progress Bar presets (android) ──────────────────────────────
@@ -160,6 +165,11 @@ public class DarkShadowThemeFragment extends BaseFragment {
     private int mAcPickerDialogId;
     private int mAc2PickerDialogId;
     private int mAc3PickerDialogId;
+    private int mPinBgRainbowPickerDialogId;
+    private int mPinNumRainbowPickerDialogId;
+    private Runnable mPinRainbowOnChanged;
+    private static final String PREF_PIN_RAINBOW_COLOR     = "DST_PIN_RAINBOW_COLOR";
+    private static final String PREF_PIN_NUM_RAINBOW_COLOR = "DST_PIN_NUM_RAINBOW_COLOR";
 
     @Override
     public String getTitle() {
@@ -208,6 +218,14 @@ public class DarkShadowThemeFragment extends BaseFragment {
             ACCENT3.setColor(color);
             mListener.onEnabledClicked(ACCENT3);
             if (mColorsAdapter   != null) mColorsAdapter.notifyItemChanged(3);
+        } else if (id == mPinBgRainbowPickerDialogId) {
+            applyPinAccentFabricated(color, false);
+            OCPreferences.putInt(PREF_PIN_RAINBOW_COLOR, color);
+            if (mPinRainbowOnChanged != null) { mPinRainbowOnChanged.run(); mPinRainbowOnChanged = null; }
+        } else if (id == mPinNumRainbowPickerDialogId) {
+            applyPinNumFabricated(color);
+            OCPreferences.putInt(PREF_PIN_NUM_RAINBOW_COLOR, color);
+            if (mPinRainbowOnChanged != null) { mPinRainbowOnChanged.run(); mPinRainbowOnChanged = null; }
         }
     }
 
@@ -219,6 +237,8 @@ public class DarkShadowThemeFragment extends BaseFragment {
         mAcPickerDialogId  = View.generateViewId();
         mAc2PickerDialogId = View.generateViewId();
         mAc3PickerDialogId = View.generateViewId();
+        mPinBgRainbowPickerDialogId  = View.generateViewId();
+        mPinNumRainbowPickerDialogId = View.generateViewId();
 
         // Loading dialog while enabling or disabling pack
         loadingDialog = new LoadingDialog(requireContext());
@@ -459,6 +479,17 @@ public class DarkShadowThemeFragment extends BaseFragment {
         }
     }
 
+    private void applyPinNumFabricated(int color) {
+        String hex = String.format("0x%08X", 0xFF000000 | (color & 0x00FFFFFF));
+        FabricatedUtil.buildAndEnableOverlays(
+            new Object[]{"com.android.systemui", "DSTNKBnumcolor", "color", "coui_numeric_keyboard_number_color", hex}
+        );
+    }
+
+    private void disablePinNumFabricated() {
+        FabricatedUtil.disableOverlay("DSTNKBnumcolor");
+    }
+
     /**
      * PIN/RVD/SVD button preset: overlay APK based (has drawables, needs OverlayUtil).
      * @param competingPrefKey se non null, l'overlay salvato in questa pref viene disabilitato
@@ -478,9 +509,18 @@ public class DarkShadowThemeFragment extends BaseFragment {
                 .setPositiveButton(android.R.string.ok, (d, w) -> {
                     if (selected[0] < 0) return;
                     loadingDialog.show(getString(R.string.loading_dialog_wait));
-                    // Disabilita overlay precedente dello stesso gruppo
-                    if (current != null) {
-                        OverlayUtil.disableOverlay("OxygenCustomizerComponent" + current + ".overlay");
+                    boolean isPinNum = PREF_PIN_NUM.equals(prefKey);
+                    if (isPinNum) {
+                        // Disabilita tutti i DSTNUMPIN RRO per evitare residui stale
+                        for (String o : PIN_NUM_OVERLAYS) {
+                            OverlayUtil.disableOverlay("OxygenCustomizerComponent" + o + ".overlay");
+                        }
+                        disablePinNumFabricated();
+                    } else {
+                        // Disabilita overlay precedente dello stesso gruppo
+                        if (current != null) {
+                            OverlayUtil.disableOverlay("OxygenCustomizerComponent" + current + ".overlay");
+                        }
                     }
                     // Disabilita overlay del gruppo concorrente (mutua esclusione RVD ↔ SVD)
                     if (competingPrefKey != null) {
@@ -491,7 +531,7 @@ public class DarkShadowThemeFragment extends BaseFragment {
                         }
                     }
                     String newOverlay = overlayNames[selected[0]];
-                    // Disable old fabricated PIN colors if switching away from an accent preset
+                    // Disable old fabricated PIN bg colors if switching away from an accent preset
                     if ("DSTPINAccent".equals(current) || "DSTPINAccentShade".equals(current)) {
                         disablePinAccentFabricated();
                     }
@@ -500,6 +540,22 @@ public class DarkShadowThemeFragment extends BaseFragment {
                         applyPinAccentFabricated(DarkShadowUtils.getColor(ACCENT1), false);
                     } else if ("DSTPINAccentShade".equals(newOverlay)) {
                         applyPinAccentFabricated(DarkShadowUtils.getColor(ACCENT1), true);
+                    } else if ("DSTNUMPINAccent".equals(newOverlay)) {
+                        applyPinNumFabricated(DarkShadowUtils.getColor(ACCENT1));
+                    } else if ("DSTNUMPINAccentShade".equals(newOverlay)) {
+                        int accent1 = DarkShadowUtils.getColor(ACCENT1);
+                        int shade = 0x80000000 | (accent1 & 0x00FFFFFF);
+                        applyPinNumFabricated(shade);
+                    } else if ("DSTNUMPINRainbow".equals(newOverlay)) {
+                        mPinRainbowOnChanged = onChanged;
+                        int savedColor = OCPreferences.getInt(PREF_PIN_NUM_RAINBOW_COLOR, 0xFFFF0000);
+                        ((MainActivity) requireActivity()).showColorPickerDialog(
+                                mPinNumRainbowPickerDialogId, savedColor, true, false, true);
+                    } else if ("DSTPINRainbow".equals(newOverlay)) {
+                        mPinRainbowOnChanged = onChanged;
+                        int savedColor = OCPreferences.getInt(PREF_PIN_RAINBOW_COLOR, 0xFFFFFFFF);
+                        ((MainActivity) requireActivity()).showColorPickerDialog(
+                                mPinBgRainbowPickerDialogId, savedColor, true, false, true);
                     }
                     OCPreferences.putString(prefKey, newOverlay);
                     loadingDialog.dismiss();
@@ -508,9 +564,18 @@ public class DarkShadowThemeFragment extends BaseFragment {
                 .setNeutralButton(R.string.dark_shadow_disable, (d, w) -> {
                     if (current == null) return;
                     loadingDialog.show(getString(R.string.loading_dialog_wait));
-                    OverlayUtil.disableOverlay("OxygenCustomizerComponent" + current + ".overlay");
-                    if ("DSTPINAccent".equals(current) || "DSTPINAccentShade".equals(current)) {
-                        disablePinAccentFabricated();
+                    boolean isPinNum = PREF_PIN_NUM.equals(prefKey);
+                    if (isPinNum) {
+                        // Disabilita tutti i DSTNUMPIN RRO per evitare residui stale
+                        for (String o : PIN_NUM_OVERLAYS) {
+                            OverlayUtil.disableOverlay("OxygenCustomizerComponent" + o + ".overlay");
+                        }
+                        disablePinNumFabricated();
+                    } else {
+                        OverlayUtil.disableOverlay("OxygenCustomizerComponent" + current + ".overlay");
+                        if ("DSTPINAccent".equals(current) || "DSTPINAccentShade".equals(current)) {
+                            disablePinAccentFabricated();
+                        }
                     }
                     OCPreferences.putString(prefKey, null);
                     loadingDialog.dismiss();
@@ -518,6 +583,77 @@ public class DarkShadowThemeFragment extends BaseFragment {
                 })
                 .setNegativeButton(android.R.string.cancel, null)
                 .show();
+    }
+
+    private void showPinCategoryDialog(Runnable onChanged) {
+        android.content.Context ctx = requireContext();
+        final String[] labels  = {
+            getString(R.string.dark_shadow_preset_pin_bg),
+            getString(R.string.dark_shadow_preset_pin_num)
+        };
+        final int[] iconRes = { R.drawable.ic_drawing, R.drawable.ic_mods_ui };
+        final Runnable[] actions = {
+            () -> showOverlayPresetDialog(getString(R.string.dark_shadow_preset_pin_bg),
+                    PIN_NAMES, PIN_OVERLAYS, PREF_PIN, null, onChanged),
+            () -> showOverlayPresetDialog(getString(R.string.dark_shadow_preset_pin_num),
+                    PIN_NUM_NAMES, PIN_NUM_OVERLAYS, PREF_PIN_NUM, null, onChanged)
+        };
+
+        TypedValue accentTv = new TypedValue();
+        ctx.getTheme().resolveAttribute(android.R.attr.colorAccent, accentTv, true);
+        final int accent = accentTv.data;
+        final float dp = ctx.getResources().getDisplayMetrics().density;
+
+        android.widget.LinearLayout container = new android.widget.LinearLayout(ctx);
+        container.setOrientation(android.widget.LinearLayout.VERTICAL);
+
+        final androidx.appcompat.app.AlertDialog[] dialogRef = new androidx.appcompat.app.AlertDialog[1];
+
+        for (int i = 0; i < 2; i++) {
+            final int idx = i;
+            android.widget.LinearLayout row = new android.widget.LinearLayout(ctx);
+            row.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+            row.setGravity(android.view.Gravity.CENTER_VERTICAL);
+            int hPad = (int)(24 * dp), vPad = (int)(16 * dp);
+            row.setPadding(hPad, vPad, hPad, vPad);
+            android.util.TypedValue ripple = new android.util.TypedValue();
+            ctx.getTheme().resolveAttribute(android.R.attr.selectableItemBackground, ripple, true);
+            row.setBackgroundResource(ripple.resourceId);
+            row.setClickable(true);
+            row.setFocusable(true);
+            row.setOnClickListener(v -> {
+                if (dialogRef[0] != null) dialogRef[0].dismiss();
+                actions[idx].run();
+            });
+
+            android.widget.ImageView iv = new android.widget.ImageView(ctx);
+            android.widget.LinearLayout.LayoutParams ivLp =
+                new android.widget.LinearLayout.LayoutParams((int)(24*dp), (int)(24*dp));
+            iv.setLayoutParams(ivLp);
+            iv.setImageResource(iconRes[idx]);
+            iv.setImageTintList(ColorStateList.valueOf(accent));
+            row.addView(iv);
+
+            android.widget.TextView tv = new android.widget.TextView(ctx);
+            android.widget.LinearLayout.LayoutParams tvLp =
+                new android.widget.LinearLayout.LayoutParams(
+                    android.widget.LinearLayout.LayoutParams.WRAP_CONTENT,
+                    android.widget.LinearLayout.LayoutParams.WRAP_CONTENT);
+            tvLp.setMarginStart((int)(16 * dp));
+            tv.setLayoutParams(tvLp);
+            tv.setText(labels[idx]);
+            tv.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 16);
+            row.addView(tv);
+
+            container.addView(row);
+        }
+
+        androidx.appcompat.app.AlertDialog d = new MaterialAlertDialogBuilder(ctx)
+                .setTitle(R.string.dark_shadow_preset_pin)
+                .setView(container)
+                .create();
+        dialogRef[0] = d;
+        d.show();
     }
 
     // ── Colors rows adapter (Phase 2) ──────────────────────────────────────────
@@ -624,9 +760,17 @@ public class DarkShadowThemeFragment extends BaseFragment {
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             holder.summary.setVisibility(View.VISIBLE);
+            holder.icon.setVisibility(View.VISIBLE);
             holder.container.setBackgroundResource(position == 0
                     ? R.drawable.preference_background_top
                     : R.drawable.preference_background_bottom);
+
+            DarkShadowItem colorItem = (position == 0) ? BACKGROUND : ACCENT1;
+            GradientDrawable circle = new GradientDrawable();
+            circle.setShape(GradientDrawable.OVAL);
+            circle.setColor(DarkShadowUtils.getColor(colorItem));
+            holder.icon.setImageDrawable(circle);
+            holder.icon.setImageTintList(null);
 
             if (position == 0) {
                 holder.title.setText(R.string.dark_shadow_preset_background);
@@ -653,13 +797,14 @@ public class DarkShadowThemeFragment extends BaseFragment {
 
         class ViewHolder extends RecyclerView.ViewHolder {
             final RelativeLayout container;
-            final TextView title, summary;
+            final ImageView       icon;
+            final TextView        title, summary;
             ViewHolder(@NonNull View v) {
                 super(v);
                 container = v.findViewById(R.id.container);
+                icon      = v.findViewById(R.id.icon);
                 title     = v.findViewById(R.id.title);
                 summary   = v.findViewById(R.id.summary);
-                v.findViewById(R.id.icon).setVisibility(View.GONE);
             }
         }
     }
@@ -697,18 +842,21 @@ public class DarkShadowThemeFragment extends BaseFragment {
                 case 0: {
                     holder.icon.setImageResource(R.drawable.ic_lock);
                     holder.title.setText(R.string.dark_shadow_preset_pin);
-                    String savedOverlay = OCPreferences.getString(PREF_PIN, null);
-                    String displayName  = getString(R.string.dark_shadow_none);
-                    if (savedOverlay != null) {
-                        for (int i = 0; i < PIN_OVERLAYS.length; i++) {
-                            if (PIN_OVERLAYS[i].equals(savedOverlay)) { displayName = PIN_NAMES[i]; break; }
-                        }
-                    }
-                    holder.summary.setText(displayName);
+                    String savedBg  = OCPreferences.getString(PREF_PIN, null);
+                    String savedNum = OCPreferences.getString(PREF_PIN_NUM, null);
+                    String bgName   = getString(R.string.dark_shadow_none);
+                    String numName  = getString(R.string.dark_shadow_none);
+                    for (int i = 0; i < PIN_OVERLAYS.length; i++)
+                        if (PIN_OVERLAYS[i].equals(savedBg)) { bgName = PIN_NAMES[i]; break; }
+                    for (int i = 0; i < PIN_NUM_OVERLAYS.length; i++)
+                        if (PIN_NUM_OVERLAYS[i].equals(savedNum)) { numName = PIN_NUM_NAMES[i]; break; }
+                    holder.summary.setMaxLines(Integer.MAX_VALUE);
+                    holder.summary.setSingleLine(false);
+                    holder.summary.setText(
+                            getString(R.string.dark_shadow_preset_pin_bg) + ": " + bgName + "\n" +
+                            getString(R.string.dark_shadow_preset_pin_num) + ": " + numName);
                     holder.container.setOnClickListener(v ->
-                            showOverlayPresetDialog(
-                                    getString(R.string.dark_shadow_preset_pin),
-                                    PIN_NAMES, PIN_OVERLAYS, PREF_PIN, null,
+                            showPinCategoryDialog(
                                     () -> { if (mUtilityAdapter != null) mUtilityAdapter.notifyItemChanged(0); }));
                     break;
                 }

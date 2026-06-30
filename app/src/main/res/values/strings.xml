@@ -1406,7 +1406,9 @@
     <string name="dark_shadow_disable">Disable</string>
     <string name="dark_shadow_preset_background">Background Preset</string>
     <string name="dark_shadow_preset_accent">Accent Preset</string>
-    <string name="dark_shadow_preset_pin">Keypad PIN Preset</string>
+    <string name="dark_shadow_preset_pin">PIN Keypad Preset</string>
+    <string name="dark_shadow_preset_pin_bg">Background Color</string>
+    <string name="dark_shadow_preset_pin_num">Number Color</string>
     <string name="dark_shadow_restart_systemui">Restart SystemUI</string>
     <string name="dark_shadow_none">None</string>
     <string name="dark_shadow_restart_summary">Apply theme changes</string>
