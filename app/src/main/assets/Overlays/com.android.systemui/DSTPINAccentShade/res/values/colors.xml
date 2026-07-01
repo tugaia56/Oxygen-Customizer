@@ -8,4 +8,6 @@
     <color name="coui_numeric_keyboard_outer_gradient_color_1">@*android:color/ripple_material_dark</color>
     <color name="coui_numeric_keyboard_outer_gradient_color_2">@*android:color/ripple_material_dark</color>
     <color name="coui_numeric_keyboard_outer_gradient_color_3">@*android:color/ripple_material_dark</color>
+    <color name="kgd_color_simple_lock_filled_rectangle_icon_color">@*android:color/accent_material_dark</color>				<!-- pallini attivi -->
+    <color name="kgd_color_simple_lock_outlined_rectangle_icon_color">#ffffffff</color>											<!-- pallini disattivi -->	
 </resources>
