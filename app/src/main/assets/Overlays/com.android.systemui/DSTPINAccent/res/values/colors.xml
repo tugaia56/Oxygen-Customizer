@@ -1,13 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Hardcoded DST accent values — no FabricatedUtil dependency at boot -->
-    <color name="coui_numeric_keyboard_border_color">@*android:color/accent_material_dark</color>
-    <color name="coui_numeric_keyboard_inner_gradient_color_1">@*android:color/accent_material_dark</color>
-    <color name="coui_numeric_keyboard_inner_gradient_color_2">@*android:color/accent_material_dark</color>
-    <color name="coui_numeric_keyboard_upper_inner_shadow_color">@*android:color/accent_material_dark</color>
-    <color name="coui_numeric_keyboard_outer_gradient_color_1">@*android:color/accent_material_dark</color>
-    <color name="coui_numeric_keyboard_outer_gradient_color_2">@*android:color/accent_material_dark</color>
-    <color name="coui_numeric_keyboard_outer_gradient_color_3">@*android:color/accent_material_dark</color>
-    <color name="kgd_color_simple_lock_filled_rectangle_icon_color">@*android:color/accent_material_dark</color>				<!-- pallini attivi -->
-    <color name="kgd_color_simple_lock_outlined_rectangle_icon_color">#ffffffff</color>											<!-- pallini disattivi -->	
+    <!-- Colors applied at runtime via FabricatedUtil — see applyPinAccentFabricated() -->
 </resources>

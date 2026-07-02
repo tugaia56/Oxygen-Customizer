@@ -8,6 +8,7 @@ import static it.dhd.oxygencustomizer.utils.DarkShadowUtils.BACKGROUND;
 
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.widget.Toast;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.util.TypedValue;
@@ -53,8 +54,8 @@ import it.dhd.oxygencustomizer.utils.overlay.OverlayUtil;
 public class DarkShadowThemeFragment extends BaseFragment {
 
     // ── Base theme overlays ────────────────────────────────────────────────────
-    // DSTSUI escluso: causa bootloop al boot su OOS16.0.7 (overlay service lo applica prima dell'app)
-    String[] overlays = new String[]{"DST", "DSTSTG"};
+    // DSTSUI è mutable (non immutable), quindi abilitarlo a runtime via OC è sicuro (non causa bootloop al boot)
+    String[] overlays = new String[]{"DST", "DSTSTG", "DSTSUI"};
 
     // ── Colors adapter (Phase 2) ───────────────────────────────────────────────
     private DstColorsAdapter mColorsAdapter;
@@ -170,6 +171,9 @@ public class DarkShadowThemeFragment extends BaseFragment {
     private Runnable mPinRainbowOnChanged;
     private static final String PREF_PIN_RAINBOW_COLOR     = "DST_PIN_RAINBOW_COLOR";
     private static final String PREF_PIN_NUM_RAINBOW_COLOR = "DST_PIN_NUM_RAINBOW_COLOR";
+    private static final String PREF_QS_BG       = "DST_QS_BG";
+    private static final String PREF_QS_BG_COLOR = "DST_QS_BG_COLOR";
+    private int mQsBgPickerDialogId;
 
     @Override
     public String getTitle() {
@@ -226,6 +230,11 @@ public class DarkShadowThemeFragment extends BaseFragment {
             applyPinNumFabricated(color);
             OCPreferences.putInt(PREF_PIN_NUM_RAINBOW_COLOR, color);
             if (mPinRainbowOnChanged != null) { mPinRainbowOnChanged.run(); mPinRainbowOnChanged = null; }
+        } else if (id == mQsBgPickerDialogId) {
+            applyQsBgFabricated(color);
+            OCPreferences.putInt(PREF_QS_BG_COLOR, color);
+            OCPreferences.putString(PREF_QS_BG, PREF_VAL_CUSTOM);
+            if (mUtilityAdapter != null) mUtilityAdapter.notifyItemChanged(4);
         }
     }
 
@@ -239,6 +248,7 @@ public class DarkShadowThemeFragment extends BaseFragment {
         mAc3PickerDialogId = View.generateViewId();
         mPinBgRainbowPickerDialogId  = View.generateViewId();
         mPinNumRainbowPickerDialogId = View.generateViewId();
+        mQsBgPickerDialogId          = View.generateViewId();
 
         // Loading dialog while enabling or disabling pack
         loadingDialog = new LoadingDialog(requireContext());
@@ -346,6 +356,49 @@ public class DarkShadowThemeFragment extends BaseFragment {
             loadingDialog.dismiss();
         }
     };
+
+    private void showQsBgDialog() {
+        int currentColor;
+        String saved = OCPreferences.getString(PREF_QS_BG, null);
+        if (PREF_VAL_CUSTOM.equals(saved)) {
+            currentColor = OCPreferences.getInt(PREF_QS_BG_COLOR, DarkShadowUtils.getColor(BACKGROUND));
+        } else {
+            currentColor = DarkShadowUtils.getColor(BACKGROUND);
+        }
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Sfondo QS Solido")
+                .setItems(new String[]{"Colore DST", "Colore Personalizzato"}, (d, which) -> {
+                    if (which == 0) {
+                        int dstColor = DarkShadowUtils.getColor(BACKGROUND);
+                        applyQsBgFabricated(dstColor);
+                        OCPreferences.putString(PREF_QS_BG, "DST");
+                        if (mUtilityAdapter != null) mUtilityAdapter.notifyItemChanged(4);
+                    } else {
+                        ((MainActivity) requireActivity()).showColorPickerDialog(
+                                mQsBgPickerDialogId, currentColor, true, true, true);
+                    }
+                })
+                .setNeutralButton(R.string.dark_shadow_disable, (d, w) -> {
+                    disableQsBgFabricated();
+                    OCPreferences.putString(PREF_QS_BG, null);
+                    if (mUtilityAdapter != null) mUtilityAdapter.notifyItemChanged(4);
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void applyQsBgFabricated(int color) {
+        String hex = String.format("0x%08X", 0xFFFFFFFFL & color);
+        FabricatedUtil.buildAndEnableOverlays(
+                new Object[]{"com.android.systemui", "DSTQSBgDark",  "color", "oplus_qs_panel_bg_dark_color",  hex},
+                new Object[]{"com.android.systemui", "DSTQSBgLight", "color", "oplus_qs_panel_bg_light_color", hex}
+        );
+    }
+
+    private void disableQsBgFabricated() {
+        FabricatedUtil.disableOverlay("DSTQSBgDark");
+        FabricatedUtil.disableOverlay("DSTQSBgLight");
+    }
 
     private void enableShadowTheme() {
         loadingDialog.show(getString(R.string.loading_dialog_wait));
@@ -468,13 +521,21 @@ public class DarkShadowThemeFragment extends BaseFragment {
             new Object[]{"com.android.systemui", "DSTNKBshadow",  "color", "coui_numeric_keyboard_upper_inner_shadow_color",  shadow},
             new Object[]{"com.android.systemui", "DSTNKBouter1",  "color", "coui_numeric_keyboard_outer_gradient_color_1",   outer1},
             new Object[]{"com.android.systemui", "DSTNKBouter2",  "color", "coui_numeric_keyboard_outer_gradient_color_2",   outer2},
-            new Object[]{"com.android.systemui", "DSTNKBouter3",  "color", "coui_numeric_keyboard_outer_gradient_color_3",   outer3}
+            new Object[]{"com.android.systemui", "DSTNKBouter3",  "color", "coui_numeric_keyboard_outer_gradient_color_3",   outer3},
+            // PIN dot indicators (pallini) — OOS16: coui_simple_lock_transparent_*
+            new Object[]{"com.android.systemui", "DSTNKBdotfillT",    "color", "coui_simple_lock_transparent_filled_rectangle_icon_color",   hex},
+            new Object[]{"com.android.systemui", "DSTNKBdotoutlineT", "color", "coui_simple_lock_transparent_outlined_rectangle_icon_color", "0x33FFFFFF"},
+            // Word text under number keys (e.g. "+" under 1) — accent_material_dark reference in stock
+            new Object[]{"com.android.systemui", "DSTNKBwordtxt",    "color", "coui_numeric_keyboard_dark_word_text_normal_color",       hex},
+            new Object[]{"com.android.systemui", "DSTNKBwordtxtL",   "color", "coui_numeric_keyboard_dark_word_text_normal_light_color", hex}
         );
     }
 
     private void disablePinAccentFabricated() {
         for (String name : new String[]{"DSTNKBborder","DSTNKBinner1","DSTNKBinner2",
-                                        "DSTNKBshadow","DSTNKBouter1","DSTNKBouter2","DSTNKBouter3"}) {
+                                        "DSTNKBshadow","DSTNKBouter1","DSTNKBouter2","DSTNKBouter3",
+                                        "DSTNKBdotfillT","DSTNKBdotoutlineT",
+                                        "DSTNKBwordtxt","DSTNKBwordtxtL"}) {
             FabricatedUtil.disableOverlay(name);
         }
     }
@@ -538,8 +599,14 @@ public class DarkShadowThemeFragment extends BaseFragment {
                     OverlayUtil.enableOverlay("OxygenCustomizerComponent" + newOverlay + ".overlay");
                     if ("DSTPINAccent".equals(newOverlay)) {
                         applyPinAccentFabricated(DarkShadowUtils.getColor(ACCENT1), false);
+                        Toast.makeText(requireContext(),
+                                "Colori PIN attivi dopo riavvio UISystem (non del device)",
+                                Toast.LENGTH_LONG).show();
                     } else if ("DSTPINAccentShade".equals(newOverlay)) {
                         applyPinAccentFabricated(DarkShadowUtils.getColor(ACCENT1), true);
+                        Toast.makeText(requireContext(),
+                                "Colori PIN attivi dopo riavvio UISystem (non del device)",
+                                Toast.LENGTH_LONG).show();
                     } else if ("DSTNUMPINAccent".equals(newOverlay)) {
                         applyPinNumFabricated(DarkShadowUtils.getColor(ACCENT1));
                     } else if ("DSTNUMPINAccentShade".equals(newOverlay)) {
@@ -814,7 +881,7 @@ public class DarkShadowThemeFragment extends BaseFragment {
 
     private class DstUtilityAdapter extends RecyclerView.Adapter<DstUtilityAdapter.ViewHolder> {
 
-        private static final int COUNT = 4;
+        private static final int COUNT = 5;
 
         @NonNull @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -896,7 +963,7 @@ public class DarkShadowThemeFragment extends BaseFragment {
                                     () -> { if (mUtilityAdapter != null) mUtilityAdapter.notifyItemChanged(2); }));
                     break;
                 }
-                default: {
+                case 3: {
                     holder.icon.setImageResource(R.drawable.ic_sysui_volume);
                     holder.title.setText(R.string.dark_shadow_preset_rvd);
                     String savedOverlay = OCPreferences.getString(PREF_RVD, null);
@@ -912,6 +979,21 @@ public class DarkShadowThemeFragment extends BaseFragment {
                                     getString(R.string.dark_shadow_preset_rvd),
                                     RVD_NAMES, RVD_OVERLAYS, PREF_RVD, null,
                                     () -> { if (mUtilityAdapter != null) mUtilityAdapter.notifyItemChanged(3); }));
+                    break;
+                }
+                default: {
+                    holder.icon.setImageResource(R.drawable.ic_qs);
+                    holder.title.setText("Sfondo QS Solido");
+                    String savedQsBg = OCPreferences.getString(PREF_QS_BG, null);
+                    String qsBgName  = getString(R.string.dark_shadow_none);
+                    if ("DST".equals(savedQsBg)) {
+                        qsBgName = "Colore DST";
+                    } else if (PREF_VAL_CUSTOM.equals(savedQsBg)) {
+                        int savedColor = OCPreferences.getInt(PREF_QS_BG_COLOR, 0xFF000000);
+                        qsBgName = String.format("#%08X", 0xFFFFFFFFL & savedColor);
+                    }
+                    holder.summary.setText(qsBgName);
+                    holder.container.setOnClickListener(v -> showQsBgDialog());
                     break;
                 }
             }
