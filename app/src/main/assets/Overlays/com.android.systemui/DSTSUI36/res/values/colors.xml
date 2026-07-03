@@ -1547,8 +1547,6 @@
     <color name="oplus_night_light_time_spacer_line_color">#1af0f1f2</color>
     <color name="oplus_night_light_time_spacer_line_color_dark_night">#ff3c4043</color>
     <color name="oplus_qs_icon_tray_normal_bg_color">#33000000</color>
-    <color name="oplus_qs_panel_bg_dark_color">#b3808080</color>
-    <color name="oplus_qs_panel_bg_light_color">#b3404040</color>
     <color name="oplus_qs_privacy_dialog_text_color">@*android:color/background_dark</color>
     <color name="oplus_qs_quick_entrance_text_color">@*android:color/background_dark</color>
     <color name="oplus_qs_quick_entrance_text_color_night">#ffffffff</color>

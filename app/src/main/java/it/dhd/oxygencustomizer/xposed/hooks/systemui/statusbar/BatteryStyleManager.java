@@ -225,9 +225,12 @@ public class BatteryStyleManager extends XposedMods {
             mTextFastColor = Color.WHITE,
             mTextPowerSaveColor = Color.WHITE;
     private boolean mTextAttachBatteryBar = false;
-    private int mBatteryBarColor;
+    private int mBatteryBarColor = Color.WHITE;
 
-    private BatteryBarView.BatteryBarColorListener mColorListener = color -> mBatteryBarColor = color;
+    private BatteryBarView.BatteryBarColorListener mColorListener = color -> {
+        mBatteryBarColor = color;
+        if (mTextAttachBatteryBar) refreshAllBatteryIcons();
+    };
 
     @SuppressWarnings("DiscouragedApi")
     public BatteryStyleManager(Context context) {
@@ -552,19 +555,22 @@ public class BatteryStyleManager extends XposedMods {
         } catch (Throwable ignored) {
             log("battery_percentage_view not found");
         }
-        if (batteryOutPercentage != null && batteryOutPercentage.getVisibility() == View.VISIBLE) {
+        if (batteryOutPercentage != null) {
             mBatteryText = batteryOutPercentage;
-            batteryOutPercentage.setTextSize(TypedValue.COMPLEX_UNIT_SP, customizePercSize ? mBatteryPercSize : 12);
-            if (!mTextAttachBatteryBar) {
-                if (mIndicateFast && isFastCharging()) {
-                    batteryOutPercentage.setTextColor(mTextFastColor);
-                } else if (mIndicateCharging && mIsCharging) {
-                    batteryOutPercentage.setTextColor(mTextChargingColor);
-                } else if (mIndicatePowerSave && isPowerSaving()) {
-                    batteryOutPercentage.setTextColor(mTextPowerSaveColor);
+            batteryOutPercentage.setTextSize(TypedValue.COMPLEX_UNIT_SP,
+                    customizePercSize ? Math.max(8, mBatteryPercSize) : 12);
+            if (batteryOutPercentage.getVisibility() == View.VISIBLE) {
+                if (!mTextAttachBatteryBar) {
+                    if (mIndicateFast && isFastCharging()) {
+                        batteryOutPercentage.setTextColor(mTextFastColor);
+                    } else if (mIndicateCharging && mIsCharging) {
+                        batteryOutPercentage.setTextColor(mTextChargingColor);
+                    } else if (mIndicatePowerSave && isPowerSaving()) {
+                        batteryOutPercentage.setTextColor(mTextPowerSaveColor);
+                    }
+                } else {
+                    batteryOutPercentage.setTextColor(mBatteryBarColor);
                 }
-            } else {
-                batteryOutPercentage.setTextColor(mBatteryBarColor);
             }
         }
         if (!CustomBatteryEnabled) return;
@@ -813,7 +819,7 @@ public class BatteryStyleManager extends XposedMods {
                         }
                         if (customizePercSize) {
                             if (batteryPercentOutView != null && batteryPercentOutView.getVisibility() == View.VISIBLE)
-                                batteryPercentOutView.setTextSize(TypedValue.COMPLEX_UNIT_SP, mBatteryPercSize);
+                                batteryPercentOutView.setTextSize(TypedValue.COMPLEX_UNIT_SP, Math.max(8, mBatteryPercSize));
                         }
 
                         if (mChargingIconSwitch && batteryCharge != null) {

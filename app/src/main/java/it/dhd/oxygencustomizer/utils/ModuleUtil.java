@@ -29,6 +29,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import it.dhd.oxygencustomizer.BuildConfig;
+import it.dhd.oxygencustomizer.utils.FileUtil;
 import it.dhd.oxygencustomizer.utils.helper.BackupRestore;
 import it.dhd.oxygencustomizer.utils.helper.BinaryInstaller;
 import it.dhd.oxygencustomizer.utils.overlay.FabricatedUtil;
@@ -90,6 +91,8 @@ public class ModuleUtil {
         Shell.cmd("cp -a /my_product/etc/extension/com.oplus.oplus-feature.xml " + MY_PRODUCT_EXTENSION_DIR + "/com.oplus.oplus-feature.xml.bak").exec();
         Shell.cmd("cp -a /my_product/etc/permissions/oplus.product.display_features.xml " + MY_PRODUCT_PERMISSIONS_DIR + "/").exec();
         Shell.cmd("cp -a /my_product/etc/permissions/oplus.product.display_features.xml " + MY_PRODUCT_PERMISSIONS_DIR + "/oplus.product.display_features.xml.bak").exec();
+
+        FileUtil.extractBanner();
 
         createMETAINF();
 

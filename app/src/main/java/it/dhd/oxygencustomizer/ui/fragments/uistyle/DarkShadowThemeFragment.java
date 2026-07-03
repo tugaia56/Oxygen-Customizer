@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.OplusRecyclerView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.materialswitch.MaterialSwitch;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -171,10 +172,6 @@ public class DarkShadowThemeFragment extends BaseFragment {
     private Runnable mPinRainbowOnChanged;
     private static final String PREF_PIN_RAINBOW_COLOR     = "DST_PIN_RAINBOW_COLOR";
     private static final String PREF_PIN_NUM_RAINBOW_COLOR = "DST_PIN_NUM_RAINBOW_COLOR";
-    private static final String PREF_QS_BG       = "DST_QS_BG";
-    private static final String PREF_QS_BG_COLOR = "DST_QS_BG_COLOR";
-    private int mQsBgPickerDialogId;
-
     @Override
     public String getTitle() {
         return getString(R.string.dark_shadow_title);
@@ -230,11 +227,6 @@ public class DarkShadowThemeFragment extends BaseFragment {
             applyPinNumFabricated(color);
             OCPreferences.putInt(PREF_PIN_NUM_RAINBOW_COLOR, color);
             if (mPinRainbowOnChanged != null) { mPinRainbowOnChanged.run(); mPinRainbowOnChanged = null; }
-        } else if (id == mQsBgPickerDialogId) {
-            applyQsBgFabricated(color);
-            OCPreferences.putInt(PREF_QS_BG_COLOR, color);
-            OCPreferences.putString(PREF_QS_BG, PREF_VAL_CUSTOM);
-            if (mUtilityAdapter != null) mUtilityAdapter.notifyItemChanged(4);
         }
     }
 
@@ -248,7 +240,6 @@ public class DarkShadowThemeFragment extends BaseFragment {
         mAc3PickerDialogId = View.generateViewId();
         mPinBgRainbowPickerDialogId  = View.generateViewId();
         mPinNumRainbowPickerDialogId = View.generateViewId();
-        mQsBgPickerDialogId          = View.generateViewId();
 
         // Loading dialog while enabling or disabling pack
         loadingDialog = new LoadingDialog(requireContext());
@@ -356,49 +347,6 @@ public class DarkShadowThemeFragment extends BaseFragment {
             loadingDialog.dismiss();
         }
     };
-
-    private void showQsBgDialog() {
-        int currentColor;
-        String saved = OCPreferences.getString(PREF_QS_BG, null);
-        if (PREF_VAL_CUSTOM.equals(saved)) {
-            currentColor = OCPreferences.getInt(PREF_QS_BG_COLOR, DarkShadowUtils.getColor(BACKGROUND));
-        } else {
-            currentColor = DarkShadowUtils.getColor(BACKGROUND);
-        }
-        new MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Sfondo QS Solido")
-                .setItems(new String[]{"Colore DST", "Colore Personalizzato"}, (d, which) -> {
-                    if (which == 0) {
-                        int dstColor = DarkShadowUtils.getColor(BACKGROUND);
-                        applyQsBgFabricated(dstColor);
-                        OCPreferences.putString(PREF_QS_BG, "DST");
-                        if (mUtilityAdapter != null) mUtilityAdapter.notifyItemChanged(4);
-                    } else {
-                        ((MainActivity) requireActivity()).showColorPickerDialog(
-                                mQsBgPickerDialogId, currentColor, true, true, true);
-                    }
-                })
-                .setNeutralButton(R.string.dark_shadow_disable, (d, w) -> {
-                    disableQsBgFabricated();
-                    OCPreferences.putString(PREF_QS_BG, null);
-                    if (mUtilityAdapter != null) mUtilityAdapter.notifyItemChanged(4);
-                })
-                .setNegativeButton(android.R.string.cancel, null)
-                .show();
-    }
-
-    private void applyQsBgFabricated(int color) {
-        String hex = String.format("0x%08X", 0xFFFFFFFFL & color);
-        FabricatedUtil.buildAndEnableOverlays(
-                new Object[]{"com.android.systemui", "DSTQSBgDark",  "color", "oplus_qs_panel_bg_dark_color",  hex},
-                new Object[]{"com.android.systemui", "DSTQSBgLight", "color", "oplus_qs_panel_bg_light_color", hex}
-        );
-    }
-
-    private void disableQsBgFabricated() {
-        FabricatedUtil.disableOverlay("DSTQSBgDark");
-        FabricatedUtil.disableOverlay("DSTQSBgLight");
-    }
 
     private void enableShadowTheme() {
         loadingDialog.show(getString(R.string.loading_dialog_wait));
@@ -882,9 +830,22 @@ public class DarkShadowThemeFragment extends BaseFragment {
     private class DstUtilityAdapter extends RecyclerView.Adapter<DstUtilityAdapter.ViewHolder> {
 
         private static final int COUNT = 5;
+        private static final int TYPE_NORMAL = 0;
+        private static final int TYPE_SWITCH = 1;
+        private static final String PREF_QS_BG = "DST_QS_BG_ENABLED";
+
+        @Override
+        public int getItemViewType(int position) {
+            return position == 4 ? TYPE_SWITCH : TYPE_NORMAL;
+        }
 
         @NonNull @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            if (viewType == TYPE_SWITCH) {
+                View v = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.view_widget_switch, parent, false);
+                return new SwitchViewHolder(v);
+            }
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.view_widget_list, parent, false);
             return new ViewHolder(v);
@@ -981,19 +942,18 @@ public class DarkShadowThemeFragment extends BaseFragment {
                                     () -> { if (mUtilityAdapter != null) mUtilityAdapter.notifyItemChanged(3); }));
                     break;
                 }
-                default: {
-                    holder.icon.setImageResource(R.drawable.ic_qs);
-                    holder.title.setText("Sfondo QS Solido");
-                    String savedQsBg = OCPreferences.getString(PREF_QS_BG, null);
-                    String qsBgName  = getString(R.string.dark_shadow_none);
-                    if ("DST".equals(savedQsBg)) {
-                        qsBgName = "Colore DST";
-                    } else if (PREF_VAL_CUSTOM.equals(savedQsBg)) {
-                        int savedColor = OCPreferences.getInt(PREF_QS_BG_COLOR, 0xFF000000);
-                        qsBgName = String.format("#%08X", 0xFFFFFFFFL & savedColor);
-                    }
-                    holder.summary.setText(qsBgName);
-                    holder.container.setOnClickListener(v -> showQsBgDialog());
+                case 4: {
+                    SwitchViewHolder svh = (SwitchViewHolder) holder;
+                    svh.icon.setImageResource(R.drawable.ic_qs);
+                    svh.title.setText(R.string.dst_qs_solid_bg);
+                    svh.summary.setText(R.string.dst_qs_solid_bg_summary);
+                    svh.switchWidget.setOnCheckedChangeListener(null);
+                    svh.switchWidget.setChecked(OCPreferences.getBoolean(PREF_QS_BG, false));
+                    svh.switchWidget.setOnCheckedChangeListener((btn, isChecked) -> {
+                        OCPreferences.putBoolean(PREF_QS_BG, isChecked);
+                        AppUtils.restartScope("systemui");
+                    });
+                    svh.container.setOnClickListener(v -> svh.switchWidget.toggle());
                     break;
                 }
             }
@@ -1011,6 +971,14 @@ public class DarkShadowThemeFragment extends BaseFragment {
                 icon      = v.findViewById(R.id.icon);
                 title     = v.findViewById(R.id.title);
                 summary   = v.findViewById(R.id.summary);
+            }
+        }
+
+        class SwitchViewHolder extends ViewHolder {
+            final MaterialSwitch switchWidget;
+            SwitchViewHolder(@NonNull View v) {
+                super(v);
+                switchWidget = v.findViewById(R.id.switch_widget);
             }
         }
     }
