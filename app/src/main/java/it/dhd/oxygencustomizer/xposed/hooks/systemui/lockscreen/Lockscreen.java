@@ -73,7 +73,7 @@ public class Lockscreen extends XposedMods {
     private boolean removeLockIcon = false;
     private View mStartAnimatable = null, mEndAnimatable = null;
     private View mStartButton = null, mEndButton = null;
-    private FrameLayout mLockIcon = null;
+    private View mLockIcon = null;
     private View mLockIconContaier = null, mLockIconView = null;
     private boolean hideLockscreenCarrier = false, hideLockscreenStatusbar = false, hideLockscreenCapsule = false;
     private TextView mCarrierText = null;
@@ -446,26 +446,50 @@ public class Lockscreen extends XposedMods {
     }
 
     private void hookLockIcon() {
+        // AOSP: com.android.keyguard.LockIconView (OOS 13-15)
+        // On OOS 16 this class may no longer be a FrameLayout — cast to View to be safe
         try {
             ReflectedClass LockIconView = ReflectedClass.of("com.android.keyguard.LockIconView");
             LockIconView
                     .after("onFinishInflate")
                     .run(param -> {
-                        mLockIcon = (FrameLayout) param.thisObject;
-                        if (removeLockIcon) {
-                            mLockIcon.setVisibility(View.GONE);
-                        }
+                        mLockIcon = (View) param.thisObject;
+                        if (removeLockIcon) mLockIcon.setVisibility(View.GONE);
                     });
         } catch (Throwable t) {
-            log("LockIconViewController not found");
+            log("LockIconView (keyguard) not found");
         }
 
+        // OOS 16: AOSP moved LockIconView to systemui package in Android 13+
+        if (Build.VERSION.SDK_INT >= 36) {
+            for (String className : new String[]{
+                    "com.android.systemui.keyguard.ui.view.LockIconView",
+                    "com.oplus.systemui.keyguard.lock.LockIconView",
+                    "com.oplus.systemui.keyguard.ui.view.LockIconView"
+            }) {
+                try {
+                    ReflectedClass cls = ReflectedClass.ofIfPossible(className);
+                    if (cls.getClazz() != null) {
+                        cls.after("onFinishInflate").run(param -> {
+                            mLockIconView = (View) param.thisObject;
+                            if (removeLockIcon) mLockIconView.setVisibility(View.GONE);
+                        });
+                        cls.after("onAttachedToWindow").run(param -> {
+                            mLockIconView = (View) param.thisObject;
+                            if (removeLockIcon) mLockIconView.setVisibility(View.GONE);
+                        });
+                        log("hookLockIcon: hooked " + className);
+                    }
+                } catch (Throwable ignored) {}
+            }
+        }
+
+        // OOS-specific controller (OOS 13-15)
         try {
-            ReflectedClass OplusLockIconViewControllerExImpl = ReflectedClass.ofIfPossible("com.oplus.keyguard.OplusLockIconViewExImpl");
-            OplusLockIconViewControllerExImpl
+            ReflectedClass OplusLockIconViewExImpl = ReflectedClass.ofIfPossible("com.oplus.keyguard.OplusLockIconViewExImpl");
+            OplusLockIconViewExImpl
                     .after("addOplusIconView")
                     .run(param -> {
-                        XposedBridge.log("OplusLockIconViewControllerExImpl init");
                         try {
                             mLockIconContaier = (View) getObjectField(param.thisObject, "mLockIconContainer");
                             mLockIconView = (View) getObjectField(param.thisObject, "mLockIcon");
@@ -474,7 +498,9 @@ public class Lockscreen extends XposedMods {
                                 mLockIconView.setVisibility(View.GONE);
                             }
                         } catch (Throwable ignored) {
-                            mLockIconContaier = (View) getObjectField(param.thisObject, "lockIcon");
+                            try {
+                                mLockIconContaier = (View) getObjectField(param.thisObject, "lockIcon");
+                            } catch (Throwable ignored2) {}
                         }
                     });
         } catch (Throwable t) {
