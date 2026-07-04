@@ -18,7 +18,9 @@ import static it.dhd.oxygencustomizer.xposed.utils.ViewHelper.coerceIn;
 import static it.dhd.oxygencustomizer.xposed.utils.ViewHelper.dp2px;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.service.notification.StatusBarNotification;
@@ -255,34 +257,24 @@ public class StatusbarNotification extends XposedMods {
 
         ReflectedClass ClearAllController = ReflectedClass.ofIfPossible("com.oplus.systemui.notification.clearall.ClearAllController");
         if (ClearAllController.getClazz() != null) {
+            // On OOS 16 the background is a blur drawable that ignores setTint/setBackgroundTintList
+            // because it renders via its own Canvas logic. Replace it with a solid ColorDrawable.
             ClearAllController
-                    .before("getPlatformBlurDrawable")
+                    .after("getPlatformBlurDrawable")
                     .run(param -> {
-                        if (customizeClearButton) {
-                            Drawable customBg = (Drawable) param.args[0];
-                            if (linkBackgroundAccent) {
-                                customBg.setTint(getPrimaryColor(mContext));
-                            } else {
-                                customBg.setTint(clearButtonBgColor);
-                            }
-                            param.setResult(customBg);
-                        }
+                        if (!customizeClearButton) return;
+                        int bgColor = linkBackgroundAccent ? getPrimaryColor(mContext) : clearButtonBgColor;
+                        param.setResult(new ColorDrawable(bgColor));
                     });
             ClearAllController
                     .after("updateClearAllBackground")
                     .run(param -> {
-                        XposedBridge.log("StatusbarNotification updateClearAllBackground" );
-                        if (customizeClearButton) {
-                            ImageView clearAllButton = (ImageView) getObjectField(param.thisObject, "clearAll");
-                            Drawable icon = clearAllButton.getDrawable();
-                            if (linkIconAccent)
-                                icon.setTint(getPrimaryColor(mContext));
-                            else
-                                icon.setTint(clearButtonIconColor);
-                            icon.invalidateSelf();
-                            clearAllButton.setImageDrawable(icon);
-                            XposedBridge.log(TAG + "updateClearAllBackground: icon color set to " + clearButtonIconColor);
-                        }
+                        if (!customizeClearButton) return;
+                        if (mClearAllButton == null) return;
+                        int bgColor = linkBackgroundAccent ? getPrimaryColor(mContext) : clearButtonBgColor;
+                        int iconColor = linkIconAccent ? getPrimaryColor(mContext) : clearButtonIconColor;
+                        mClearAllButton.setBackground(new ColorDrawable(bgColor));
+                        mClearAllButton.setImageTintList(ColorStateList.valueOf(iconColor));
                     });
         }
 
@@ -410,28 +402,15 @@ public class StatusbarNotification extends XposedMods {
     private void updateButton() {
         if (mClearAllButton == null) return;
         if (customizeClearButton) {
-            if (defaultClearAllBg != null) {
-                Drawable customBg = defaultClearAllBg;
-                if (linkBackgroundAccent) {
-                    customBg.setTint(getPrimaryColor(mContext));
-                } else {
-                    customBg.setTint(clearButtonBgColor);
-                }
-                mClearAllButton.setBackground(customBg);
-            }
-            Drawable icon = defaultClearAllIcon;
-            if (linkIconAccent)
-                icon.setTint(getPrimaryColor(mContext));
-            else
-                icon.setTint(clearButtonIconColor);
-            mClearAllButton.setImageDrawable(icon);
+            int bgColor = linkBackgroundAccent ? getPrimaryColor(mContext) : clearButtonBgColor;
+            int iconColor = linkIconAccent ? getPrimaryColor(mContext) : clearButtonIconColor;
+            // Replace blur background with a plain ColorDrawable so the color is always visible
+            mClearAllButton.setBackground(new ColorDrawable(bgColor));
+            mClearAllButton.setImageTintList(ColorStateList.valueOf(iconColor));
         } else {
-            if (defaultClearAllIcon != null) {
-                mClearAllButton.setImageDrawable(defaultClearAllIcon);
-            }
-            if (defaultClearAllBg != null) {
-                mClearAllButton.setBackground(defaultClearAllBg);
-            }
+            mClearAllButton.setImageTintList(null);
+            if (defaultClearAllIcon != null) mClearAllButton.setImageDrawable(defaultClearAllIcon);
+            if (defaultClearAllBg != null) mClearAllButton.setBackground(defaultClearAllBg);
         }
     }
 
