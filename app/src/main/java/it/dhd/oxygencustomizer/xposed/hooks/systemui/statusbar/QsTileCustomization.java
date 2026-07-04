@@ -521,7 +521,16 @@ public class QsTileCustomization extends XposedMods {
         final ReflectedClass.ReflectionConsumer newUiHook = param -> {
             if (!qsBrightnessSliderCustomize) return;
 
-            Object slider = getObjectField(param.thisObject, "slider");
+            Object slider;
+            try {
+                slider = getObjectField(param.thisObject, "slider");
+            } catch (Throwable t) {
+                try {
+                    slider = getObjectField(param.thisObject, "mSlider");
+                } catch (Throwable t2) {
+                    return;
+                }
+            }
 
             int colorToApply = getPrimaryColor(mContext);
             if (qsBrightnessSliderColorMode == 2) {
@@ -641,10 +650,8 @@ public class QsTileCustomization extends XposedMods {
                 .run(param -> {
                     if (qsCustomHighlightTileColors) {
                         mHighlightTileViewBackgroundProxy = new QsHighlightTileViewBackgroundProxyImplOC((QsTileViewInfoProvider) param.thisObject);
-                        QsViewBackgroundProxy mBackgroundProxy = (QsViewBackgroundProxy) getObjectField(param.thisObject, "mBackgroundProxy");
                         mHighlightTileViewBackgroundProxy.setColors(qsActiveColorHighlight, qsInactiveColorHighlight, qsDisabledColorHighlight);
-                        mBackgroundProxy = mHighlightTileViewBackgroundProxy;
-                        setObjectField(param.thisObject, "mBackgroundProxy", mBackgroundProxy);
+                        setObjectField(param.thisObject, "mBackgroundProxy", mHighlightTileViewBackgroundProxy);
                     }
                 });
         OplusQSHighlightTileView
@@ -661,6 +668,31 @@ public class QsTileCustomization extends XposedMods {
                 .run(param -> {
                     if (!customHighlightTileRadius) return;
                     param.setResult(getTileOutlineTest((View) param.args[0], dp2px(mContext, highlightTileRadius)));
+                });
+        // OOS 16: OplusQSHighlightTileViewImpl is also the highlight tile view — hook color proxy
+        OplusQSHighlightTileViewImpl
+                .before("initializeBackgroundProxy")
+                .run(param -> {
+                    if (!qsCustomHighlightTileColors) return;
+                    try {
+                        mHighlightPluginTileViewBackgroundProxy = new QsHighlightTileViewBackgroundProxyImplOC((QsTileViewInfoProvider) param.thisObject);
+                        mHighlightPluginTileViewBackgroundProxy.setColors(qsActiveColorHighlight, qsInactiveColorHighlight, qsDisabledColorHighlight);
+                        param.setResult(mHighlightPluginTileViewBackgroundProxy);
+                    } catch (Throwable t) {
+                        log("OOS16 highlight tile initProxy failed: " + t);
+                    }
+                });
+        OplusQSHighlightTileViewImpl
+                .before("initializeDisableThemeBackgroundProxy")
+                .run(param -> {
+                    if (!qsCustomHighlightTileColors) return;
+                    try {
+                        mHighlightPluginTileViewBackgroundProxy = new QsHighlightTileViewBackgroundProxyImplOC((QsTileViewInfoProvider) param.thisObject);
+                        mHighlightPluginTileViewBackgroundProxy.setColors(qsActiveColorHighlight, qsInactiveColorHighlight, qsDisabledColorHighlight);
+                        param.setResult(mHighlightPluginTileViewBackgroundProxy);
+                    } catch (Throwable t) {
+                        log("OOS16 highlight tile initProxy failed: " + t);
+                    }
                 });
         QsViewOutlineProviderKtClz
                 .before("getOutlineProviderForHighlightTile")
@@ -682,10 +714,8 @@ public class QsTileCustomization extends XposedMods {
                 .run(param -> {
                     if (qsCustomTileColors) {
                         mTileViewBackgroundProxy = new QsTileViewBackgroundProxyImplOC((QsTileViewInfoProvider) param.thisObject);
-                        QsViewBackgroundProxy mBackgroundProxy = (QsViewBackgroundProxy) getObjectField(param.thisObject, "mBackgroundProxy");
                         mTileViewBackgroundProxy.setColors(qsActiveColor, qsInactiveColor, qsDisabledColor);
-                        mBackgroundProxy = mTileViewBackgroundProxy;
-                        setObjectField(param.thisObject, "mBackgroundProxy", mBackgroundProxy);
+                        setObjectField(param.thisObject, "mBackgroundProxy", mTileViewBackgroundProxy);
                     }
                 });
         ReflectedClass.ReflectionConsumer colorBaseHook = param -> {
@@ -701,6 +731,15 @@ public class QsTileCustomization extends XposedMods {
         OplusQSResizeableTileViewOneXOne
                 .before("initializeDisableThemeBackgroundProxy")
                 .run(colorBaseHook);
+        // OOS 16: OplusQSTileViewImpl (used for labels on OOS15+) may also have initializeBackgroundProxy
+        ReflectedClass OplusQSTileViewImplColor = ReflectedClass.ofIfPossible("com.oplus.systemui.qs.tileimpl.OplusQSTileViewImpl");
+        OplusQSTileViewImplColor
+                .before("initializeBackgroundProxy")
+                .run(colorBaseHook);
+        OplusQSTileViewImplColor
+                .before("initializeDisableThemeBackgroundProxy")
+                .run(colorBaseHook);
+
         OplusQSTileBaseView
                 .before("getBgOutlineProvider")
                 .run(param -> {
@@ -749,10 +788,8 @@ public class QsTileCustomization extends XposedMods {
                 .run(param -> {
                     if (qsCustomHighlightIconTileColors) {
                         mHighlightPluginTileViewBackgroundProxy = new QsHighlightTileViewBackgroundProxyImplOC((QsTileViewInfoProvider) param.thisObject);
-                        QsViewBackgroundProxy mBackgroundProxy = (QsViewBackgroundProxy) getObjectField(param.thisObject, "mBackgroundProxy");
                         mHighlightPluginTileViewBackgroundProxy.setColors(qsActiveColorHighlight, qsInactiveColorHighlight, qsDisabledColorHighlight);
-                        mBackgroundProxy = mHighlightPluginTileViewBackgroundProxy;
-                        setObjectField(param.thisObject, "mBackgroundProxy", mBackgroundProxy);
+                        setObjectField(param.thisObject, "mBackgroundProxy", mHighlightPluginTileViewBackgroundProxy);
                     }
                 });
         OplusQSHighlightPluginTileView
@@ -820,10 +857,12 @@ public class QsTileCustomization extends XposedMods {
                 .run(param -> {
                     if (qsCustomMediaTileColor) {
                         mStaticViewBackgroundProxy = new StaticViewBackgroundProxyImplOC((QsStaticViewInfoProvider) param.thisObject);
-                        QsViewBackgroundProxy mBackgroundProxy = (QsViewBackgroundProxy) getObjectField(param.thisObject, "backgroundProxy");
                         mStaticViewBackgroundProxy.setColors(qsMediaTileColor);
-                        mBackgroundProxy = mStaticViewBackgroundProxy;
-                        setObjectField(param.thisObject, "backgroundProxy", mBackgroundProxy);
+                        try {
+                            setObjectField(param.thisObject, "backgroundProxy", mStaticViewBackgroundProxy);
+                        } catch (Throwable t) {
+                            setObjectField(param.thisObject, "mBackgroundProxy", mStaticViewBackgroundProxy);
+                        }
                     }
                 });
         OplusQsMediaPanelView

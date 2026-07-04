@@ -2,6 +2,7 @@ package it.dhd.oxygencustomizer.xposed.utils.systemui;
 
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.view.View;
 
 import com.oplus.systemui.qs.base.widget.BaseQsViewBackground;
 import com.oplus.systemui.qs.base.widget.QsStaticViewInfoProvider;
@@ -65,6 +66,10 @@ public class StaticViewBackgroundProxyImplOC extends QsViewBackgroundProxy {
             GradientDrawable ensureMaskDrawable = ensureMaskDrawable();
             ensureMaskDrawable.setColor(mBackgroundColor);
             StaticViewBackgroundProxyImplOC.this.panelInfo.updateBackground(ensureMaskDrawable);
+            try {
+                View bgView = StaticViewBackgroundProxyImplOC.this.panelInfo.getBackgroundView();
+                if (bgView != null) bgView.setBackground(ensureMaskDrawable);
+            } catch (Throwable ignored) {}
         }
 
         @Override
@@ -73,6 +78,10 @@ public class StaticViewBackgroundProxyImplOC extends QsViewBackgroundProxy {
             ensureMaskDrawable.setColor(mBackgroundColor);
             ensureMaskDrawable.invalidateSelf();
             StaticViewBackgroundProxyImplOC.this.panelInfo.updateBackground(ensureMaskDrawable);
+            try {
+                View bgView = StaticViewBackgroundProxyImplOC.this.panelInfo.getBackgroundView();
+                if (bgView != null) bgView.setBackground(ensureMaskDrawable);
+            } catch (Throwable ignored) {}
         }
 
         public final GradientDrawable getMaskDrawableNormal() {

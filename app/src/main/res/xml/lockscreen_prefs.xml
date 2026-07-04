@@ -209,6 +209,48 @@
             android:title="@string/lockscreen_hide_statusbar"
             app:iconSpaceReserved="false" />
 
+    </it.dhd.oneplusui.preference.OplusPreferenceCategory>
+
+    <it.dhd.oneplusui.preference.OplusPreferenceCategory
+        android:title="@string/lockscreen_notif_pill_category"
+        app:iconSpaceReserved="false">
+
+        <it.dhd.oneplusui.preference.OplusSwitchPreference
+            android:defaultValue="false"
+            android:key="lockscreen_notif_pill_border"
+            android:summary="@string/lockscreen_notif_pill_border_summary"
+            android:title="@string/lockscreen_notif_pill_border"
+            app:iconSpaceReserved="false" />
+
+        <it.dhd.oxygencustomizer.ui.preferences.OplusColorPreference
+            android:defaultValue="-1"
+            android:dependency="lockscreen_notif_pill_border"
+            android:key="lockscreen_notif_pill_border_color"
+            android:title="@string/lockscreen_notif_pill_border_color"
+            app:iconSpaceReserved="false" />
+
+        <it.dhd.oneplusui.preference.OplusSwitchPreference
+            android:defaultValue="false"
+            android:key="lockscreen_notif_pill_bg_enabled"
+            android:summary="@string/lockscreen_notif_pill_bg_summary"
+            android:title="@string/lockscreen_notif_pill_bg"
+            app:iconSpaceReserved="false" />
+
+        <it.dhd.oxygencustomizer.ui.preferences.OplusColorPreference
+            android:defaultValue="-16777216"
+            android:dependency="lockscreen_notif_pill_bg_enabled"
+            android:key="lockscreen_notif_pill_bg_color"
+            android:title="@string/lockscreen_notif_pill_bg_color"
+            app:cpv_showAlphaSlider="true"
+            app:iconSpaceReserved="false" />
+
+    </it.dhd.oneplusui.preference.OplusPreferenceCategory>
+
+    <it.dhd.oneplusui.preference.OplusPreferenceCategory
+        android:key="lockscreen_misc_category2"
+        android:title="@string/misc"
+        app:iconSpaceReserved="false">
+
         <it.dhd.oneplusui.preference.OplusSwitchPreference
             android:defaultValue="false"
             android:key="disable_power_on_lockscreen"

@@ -13,6 +13,10 @@ import static it.dhd.oxygencustomizer.utils.Constants.Preferences.Lockscreen.LOC
 import static it.dhd.oxygencustomizer.utils.Constants.Preferences.Lockscreen.LOCKSCREEN_HIDE_CARRIER;
 import static it.dhd.oxygencustomizer.utils.Constants.Preferences.Lockscreen.LOCKSCREEN_HIDE_FINGERPRINT;
 import static it.dhd.oxygencustomizer.utils.Constants.Preferences.Lockscreen.LOCKSCREEN_HIDE_STATUSBAR;
+import static it.dhd.oxygencustomizer.utils.Constants.Preferences.Lockscreen.LOCKSCREEN_NOTIF_PILL_BORDER;
+import static it.dhd.oxygencustomizer.utils.Constants.Preferences.Lockscreen.LOCKSCREEN_NOTIF_PILL_BORDER_COLOR;
+import static it.dhd.oxygencustomizer.utils.Constants.Preferences.Lockscreen.LOCKSCREEN_NOTIF_PILL_BG_ENABLED;
+import static it.dhd.oxygencustomizer.utils.Constants.Preferences.Lockscreen.LOCKSCREEN_NOTIF_PILL_BG_COLOR;
 import static it.dhd.oxygencustomizer.utils.Constants.Preferences.Lockscreen.LOCKSCREEN_REMOVE_LEFT_AFFORDANCE;
 import static it.dhd.oxygencustomizer.utils.Constants.Preferences.Lockscreen.LOCKSCREEN_REMOVE_LOCK;
 import static it.dhd.oxygencustomizer.utils.Constants.Preferences.Lockscreen.LOCKSCREEN_REMOVE_RIGHT_AFFORDANCE;
@@ -31,6 +35,7 @@ import android.graphics.Color;
 import android.graphics.ImageDecoder;
 import android.graphics.drawable.AnimatedImageDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Environment;
 import android.text.TextUtils;
@@ -76,6 +81,11 @@ public class Lockscreen extends XposedMods {
     private FrameLayout mLockIcon = null;
     private View mLockIconContaier = null, mLockIconView = null;
     private boolean hideLockscreenCarrier = false, hideLockscreenStatusbar = false, hideLockscreenCapsule = false;
+    // Notif pill
+    private boolean notifPillBorder = false;
+    private int notifPillBorderColor = Color.WHITE;
+    private boolean notifPillBgEnabled = false;
+    private int notifPillBgColor = Color.TRANSPARENT;
     private TextView mCarrierText = null;
     private String lockscreenCarrierReplacement = "";
 
@@ -114,6 +124,10 @@ public class Lockscreen extends XposedMods {
         hideLockscreenCarrier = Xprefs.getBoolean(LOCKSCREEN_HIDE_CARRIER, false);
         hideLockscreenStatusbar = Xprefs.getBoolean(LOCKSCREEN_HIDE_STATUSBAR, false);
         hideLockscreenCapsule = Xprefs.getBoolean(LOCKSCREEN_HIDE_CAPSULE, false);
+        notifPillBorder = Xprefs.getBoolean(LOCKSCREEN_NOTIF_PILL_BORDER, false);
+        notifPillBorderColor = Xprefs.getInt(LOCKSCREEN_NOTIF_PILL_BORDER_COLOR, Color.WHITE);
+        notifPillBgEnabled = Xprefs.getBoolean(LOCKSCREEN_NOTIF_PILL_BG_ENABLED, false);
+        notifPillBgColor = Xprefs.getInt(LOCKSCREEN_NOTIF_PILL_BG_COLOR, Color.TRANSPARENT);
         lockscreenCarrierReplacement = Xprefs.getString(LOCKSCREEN_CARRIER_REPLACEMENT, "");
 
         updateDrawable();
@@ -559,10 +573,46 @@ public class Lockscreen extends XposedMods {
                         } catch (Throwable ignored) {
                         }
                     }
+                    // Notif pill border / background color
+                    if (notifPillBorder || notifPillBgEnabled) {
+                        try {
+                            @SuppressLint("DiscouragedApi") View seedingCard = liparam.view.findViewById(
+                                    liparam.res.getIdentifier("keyguard_seeding_card_container", "id", mContext.getPackageName()));
+                            if (seedingCard != null) {
+                                applyNotifPillStyle(seedingCard);
+                            }
+                        } catch (Throwable ignored) {}
+                    }
                 }
             });
         } catch (Throwable t) {
             log(t);
+        }
+    }
+
+    private void applyNotifPillStyle(View pill) {
+        // Custom background fill (replaces blur on OOS 16 too)
+        if (notifPillBgEnabled) {
+            try {
+                GradientDrawable bg = new GradientDrawable();
+                bg.setShape(GradientDrawable.RECTANGLE);
+                bg.setCornerRadius(200f); // pill shape
+                bg.setColor(notifPillBgColor);
+                if (notifPillBorder) {
+                    bg.setStroke((int) (1.5f * mContext.getResources().getDisplayMetrics().density), notifPillBorderColor);
+                }
+                pill.setBackground(bg);
+            } catch (Throwable ignored) {}
+        } else if (notifPillBorder) {
+            // Border only — draw as foreground so blur background stays visible
+            try {
+                GradientDrawable border = new GradientDrawable();
+                border.setShape(GradientDrawable.RECTANGLE);
+                border.setCornerRadius(200f); // pill shape
+                border.setColor(Color.TRANSPARENT);
+                border.setStroke((int) (1.5f * mContext.getResources().getDisplayMetrics().density), notifPillBorderColor);
+                pill.setForeground(border);
+            } catch (Throwable ignored) {}
         }
     }
 
