@@ -495,10 +495,6 @@ public final class Constants {
             public static final String LOCKSCREEN_HIDE_CARRIER = "lockscreen_hide_carrier";
             public static final String LOCKSCREEN_HIDE_STATUSBAR = "lockscreen_hide_statusbar";
             public static final String LOCKSCREEN_HIDE_CAPSULE = "lockscreen_hide_capsule";
-            public static final String LOCKSCREEN_NOTIF_PILL_BORDER = "lockscreen_notif_pill_border";
-            public static final String LOCKSCREEN_NOTIF_PILL_BORDER_COLOR = "lockscreen_notif_pill_border_color";
-            public static final String LOCKSCREEN_NOTIF_PILL_BG_ENABLED = "lockscreen_notif_pill_bg_enabled";
-            public static final String LOCKSCREEN_NOTIF_PILL_BG_COLOR = "lockscreen_notif_pill_bg_color";
             public static final String LOCKSCREEN_CARRIER_REPLACEMENT = "lockscreen_carrier_replacement";
             public static final String LOCKSCREEN_SHUFFLE_PIN = "shufflePinEnabled";
             public static final String LOCKSCREEN_KEEP_SHUFFLING = "keepShuffling";

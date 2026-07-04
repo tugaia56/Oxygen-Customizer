@@ -784,13 +784,6 @@
     <string name="lockscreen_hide_statusbar_summary">Nascondi la barra di stato nella schermata di blocco</string>
     <string name="lockscreen_hide_capsule">Nascondi Capsula</string>
     <string name="lockscreen_hide_capsule_summary">Nascondi la capsula nella schermata di blocco (Chiamata/Hotspot/ecc.)</string>
-    <string name="lockscreen_notif_pill_category">Capsula notifiche</string>
-    <string name="lockscreen_notif_pill_border">Bordo</string>
-    <string name="lockscreen_notif_pill_border_summary">Aggiunge un bordo alla capsula notifiche</string>
-    <string name="lockscreen_notif_pill_border_color">Colore bordo</string>
-    <string name="lockscreen_notif_pill_bg">Sfondo personalizzato</string>
-    <string name="lockscreen_notif_pill_bg_summary">Sostituisce lo sfondo sfumato con un colore solido</string>
-    <string name="lockscreen_notif_pill_bg_color">Colore sfondo</string>
     <string name="lockscreen_hide_power_menu">Nascondi menù alimentazione</string>
     <string name="lockscreen_hide_power_menu_summary">Nascondi il menù di spegnimento nella schermata di blocco sicura</string>
     <string name="lockscreen_remove_sos_title">Nascondi pulsante SOS</string>

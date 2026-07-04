@@ -859,13 +859,6 @@
     <string name="lockscreen_hide_statusbar_summary">Hide statusbar on lockscreen</string>
     <string name="lockscreen_hide_capsule">Hide Capsule</string>
     <string name="lockscreen_hide_capsule_summary">Hide capsule on lockscreen (Call/Hotspot/etc)</string>
-    <string name="lockscreen_notif_pill_category">Notification pill</string>
-    <string name="lockscreen_notif_pill_border">Border</string>
-    <string name="lockscreen_notif_pill_border_summary">Add a stroke border to the notification pill</string>
-    <string name="lockscreen_notif_pill_border_color">Border color</string>
-    <string name="lockscreen_notif_pill_bg">Custom background</string>
-    <string name="lockscreen_notif_pill_bg_summary">Replace the default blurred background with a solid color</string>
-    <string name="lockscreen_notif_pill_bg_color">Background color</string>
     <string name="lockscreen_hide_power_menu">Hide power menu</string>
     <string name="lockscreen_hide_power_menu_summary">Hide power menu on secure lockscreen</string>
     <string name="lockscreen_remove_sos_title">Hide SOS button</string>
