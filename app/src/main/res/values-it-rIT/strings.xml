@@ -436,7 +436,7 @@
     <string name="quick_settings_tiles_vertical_columns">Colonne Impostazioni rapide (orizzontale)</string>
     <string name="qs_blur_max_amount">Valore massimo di sfocatura</string>
     <string name="qs_blur_max_amount_summary">Imposta il valore massimo di sfocatura per le Impostazioni Rapide.</string>
-    <string name="dst_qs_solid_bg">Sfondo QS Solido (DST)</string>
+    <string name="dst_qs_solid_bg">Sfondo QS Solido</string>
     <string name="dst_qs_solid_bg_summary">Sostituisce la sfocatura QS con il colore di sfondo DST</string>
     <!-- Quick Settings Widgets -->
     <string name="quick_settings_widgets_summary">Mostra Widget delle Impostazioni Rapide</string>
@@ -1276,6 +1276,7 @@
     <string name="dark_shadow_preset_dlg">Preset Stile Dialogo</string>
     <string name="dark_shadow_preset_cpb">Preset Barra Progresso Circolare</string>
     <string name="dark_shadow_preset_rvd">Preset Icona Volume Adjust</string>
+    <string name="dark_shadow_preset_clear_all">Colore Pulsante Cancella Recenti</string>
     <string name="dark_shadow_preset_svd">Preset Pulsante Volume Quadrato</string>
     <string name="dark_shadow_section_apply_theme">Applica Tema</string>
     <string name="dark_shadow_apply_theme">Applica Tema</string>
