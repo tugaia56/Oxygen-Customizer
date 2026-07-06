@@ -1373,7 +1373,7 @@
     <string name="lockscreen_widgets_style3">Trasparente</string>
     <!-- LS Widgets Actions -->
     <string name="camera">Fotocamera</string>
-    <string name="clock_timer">Orologio\nTimer</string>
+    <string name="clock_timer">Timer\nOrologio</string>
     <string name="calculator">Calcolatrice</string>
     <string name="gallery">Galleria</string>
     <string name="media">Lettore multimediale</string>
