@@ -110,6 +110,11 @@ public class DarkShadowThemeFragment extends BaseFragment {
         0xFF7268fc, 0xFFffd600, 0xFFffc107,
     };
 
+    // ── Clear All button color (com.android.launcher) ────────────────────────
+    private static final String PREF_CLEAR_ALL    = "DST_CLEAR_ALL_PRESET";
+    private static final String OVERLAY_CLEAR_ALL = "LauncherClearAll";
+    private static final String[] CLEAR_ALL_NAMES = {"Button Accent", "Button Accent Shade", "Button Dark", "Button Grey"};
+
     // ── Keypad PIN button presets (com.android.systemui) ──────────────────────
     private static final String[] PIN_NAMES    = {"Accent", "Accent Shade", "Rainbow"};
     private static final String[] PIN_OVERLAYS = {"DSTPINAccent", "DSTPINAccentShade", "DSTPINRainbow"};
@@ -671,6 +676,46 @@ public class DarkShadowThemeFragment extends BaseFragment {
         d.show();
     }
 
+    private void showClearAllDialog(Runnable onChanged) {
+        String current = OCPreferences.getString(PREF_CLEAR_ALL, null);
+        int currentIdx = -1;
+        for (int i = 0; i < CLEAR_ALL_NAMES.length; i++) {
+            if (CLEAR_ALL_NAMES[i].equals(current)) { currentIdx = i; break; }
+        }
+        final int[] selected = {currentIdx};
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.dark_shadow_preset_clear_all)
+                .setSingleChoiceItems(CLEAR_ALL_NAMES, currentIdx, (d, which) -> selected[0] = which)
+                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                    if (selected[0] < 0) return;
+                    int color = resolveClearAllColor(selected[0]);
+                    FabricatedUtil.buildAndEnableOverlay(
+                            "com.android.launcher", OVERLAY_CLEAR_ALL, "color",
+                            "toggle_bar_apply_btn_enabled_color",
+                            String.format("0x%08X", 0xFFFFFFFFL & color));
+                    OCPreferences.putString(PREF_CLEAR_ALL, CLEAR_ALL_NAMES[selected[0]]);
+                    if (onChanged != null) onChanged.run();
+                })
+                .setNeutralButton(R.string.dark_shadow_disable, (d, w) -> {
+                    FabricatedUtil.disableOverlay(OVERLAY_CLEAR_ALL);
+                    OCPreferences.putString(PREF_CLEAR_ALL, null);
+                    if (onChanged != null) onChanged.run();
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private int resolveClearAllColor(int preset) {
+        int accent = DarkShadowUtils.getColor(ACCENT1);
+        int bg     = DarkShadowUtils.getColor(BACKGROUND);
+        switch (preset) {
+            case 1: return DarkShadowUtils.getColor(ACCENT3);       // Accent Shade = ripple_material_dark
+            case 2: return bg;                                        // Dark = DST background
+            case 3: return ColorUtils.adjustColor(bg, 45);           // Grey = bg+45% (come button_material_light in DST)
+            default: return accent;                                   // Accent
+        }
+    }
+
     // ── Colors rows adapter (Phase 2) ──────────────────────────────────────────
 
     private class DstColorsAdapter extends RecyclerView.Adapter<DstColorsAdapter.ViewHolder> {
@@ -829,7 +874,7 @@ public class DarkShadowThemeFragment extends BaseFragment {
 
     private class DstUtilityAdapter extends RecyclerView.Adapter<DstUtilityAdapter.ViewHolder> {
 
-        private static final int COUNT = 5;
+        private static final int COUNT = 6;
         private static final int TYPE_NORMAL = 0;
         private static final int TYPE_SWITCH = 1;
         private static final String PREF_QS_BG = "DST_QS_BG_ENABLED";
@@ -954,6 +999,16 @@ public class DarkShadowThemeFragment extends BaseFragment {
                         AppUtils.restartScope("systemui");
                     });
                     svh.container.setOnClickListener(v -> svh.switchWidget.toggle());
+                    break;
+                }
+                case 5: {
+                    holder.icon.setImageResource(R.drawable.ic_recents);
+                    holder.title.setText(R.string.dark_shadow_preset_clear_all);
+                    String saved = OCPreferences.getString(PREF_CLEAR_ALL, null);
+                    holder.summary.setText(saved != null ? saved : getString(R.string.dark_shadow_none));
+                    holder.container.setOnClickListener(v ->
+                            showClearAllDialog(
+                                    () -> { if (mUtilityAdapter != null) mUtilityAdapter.notifyItemChanged(5); }));
                     break;
                 }
             }
