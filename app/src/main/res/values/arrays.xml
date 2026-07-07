@@ -1119,11 +1119,11 @@
     </string-array>
 
     <string-array name="dst_cpb_preset_names">
-        <item>Aurora Theme</item>
-        <item>Arrow</item>
-        <item>Radioactive</item>
-        <item>Sprite Theme</item>
-        <item>Stars</item>
+        <item>CPB Aurora Theme</item>
+        <item>CPB Arrow</item>
+        <item>CPB Radioactive</item>
+        <item>CPB Sprite Theme</item>
+        <item>CPB Stars</item>
     </string-array>
 
     <string-array name="dst_rvd_preset_names">

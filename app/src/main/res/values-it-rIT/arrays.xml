@@ -21,11 +21,11 @@
     </string-array>
 
     <string-array name="dst_cpb_preset_names">
-        <item>Aurora Theme</item>
-        <item>Arrow</item>
-        <item>Radioactive</item>
-        <item>Sprite Theme</item>
-        <item>Stars</item>
+        <item>BPC Aurora Theme</item>
+        <item>BPC Arrow</item>
+        <item>BPC Radioactive</item>
+        <item>BPC Sprite Theme</item>
+        <item>BPC Stars</item>
     </string-array>
 
     <string-array name="dst_rvd_preset_names">
@@ -54,4 +54,4 @@
         <item>Pulsante Grigio</item>
     </string-array>
 
-</res
+</resources>

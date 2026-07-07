@@ -655,7 +655,9 @@ public class DarkShadowThemeFragment extends BaseFragment {
 
     private void showClearAllDialog(Runnable onChanged) {
         String[] clearAllNames = getResources().getStringArray(R.array.dst_clear_all_preset_names);
-        int currentIdx = OCPreferences.getInt(PREF_CLEAR_ALL, -1);
+        int currentIdx = -1;
+        try { currentIdx = OCPreferences.getInt(PREF_CLEAR_ALL, -1); }
+        catch (ClassCastException ignored) { OCPreferences.clear(PREF_CLEAR_ALL); }
         final int[] selected = {currentIdx};
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.dark_shadow_preset_clear_all)
@@ -997,7 +999,9 @@ public class DarkShadowThemeFragment extends BaseFragment {
                 case 6: {
                     holder.icon.setImageResource(R.drawable.ic_recents);
                     holder.title.setText(R.string.dark_shadow_preset_clear_all);
-                    int savedIdx = OCPreferences.getInt(PREF_CLEAR_ALL, -1);
+                    int savedIdx = -1;
+                    try { savedIdx = OCPreferences.getInt(PREF_CLEAR_ALL, -1); }
+                    catch (ClassCastException ignored) { OCPreferences.clear(PREF_CLEAR_ALL); }
                     String[] caNames = getResources().getStringArray(R.array.dst_clear_all_preset_names);
                     holder.summary.setText(savedIdx >= 0 && savedIdx < caNames.length
                             ? caNames[savedIdx] : getString(R.string.dark_shadow_none));

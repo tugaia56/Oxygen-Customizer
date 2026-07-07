@@ -856,6 +856,9 @@ public class QsTileCustomization extends XposedMods {
                 .afterConstruction()
                 .run(param -> {
                     if (qsCustomMediaTileColor) {
+                        // OOS 16: subclasses (e.g. OplusQsNormalMediaPanelView) may not
+                        // implement QsStaticViewInfoProvider — skip them silently
+                        if (!(param.thisObject instanceof QsStaticViewInfoProvider)) return;
                         mStaticViewBackgroundProxy = new StaticViewBackgroundProxyImplOC((QsStaticViewInfoProvider) param.thisObject);
                         mStaticViewBackgroundProxy.setColors(qsMediaTileColor);
                         try {
