@@ -1055,6 +1055,7 @@
         <item>1</item>
     </string-array>
 
+
     <!-- Buttons -->
     <string-array name="pluskey_action_entries">
         <item>@string/none</item>
@@ -1075,7 +1076,6 @@
         <item>@string/gesture_override_back_hold_command_circle_to_search</item>
         <item>@string/qs_widget_custom_app</item>
         <item>@string/plusKey_activity</item>
-
     </string-array>
 
     <string-array name="pluskey_action_values">
@@ -1097,6 +1097,59 @@
         <item>circle_to_search</item>
         <item>app:</item>
         <item>activity:</item>
+    </string-array>
+
+    <!-- ── DST Utility preset display names (EN) ──────────────────────────── -->
+
+    <string-array name="dst_pin_preset_names">
+        <item>Accent</item>
+        <item>Accent Shade</item>
+        <item>Custom</item>
+    </string-array>
+
+    <string-array name="dst_dlg_preset_names">
+        <item>Dialog High Transparency</item>
+        <item>Dialog High Transparency Outlined</item>
+        <item>Dialog Low Transparency</item>
+        <item>Dialog Low Transparency Outlined</item>
+        <item>Dialog Medium Transparency</item>
+        <item>Dialog Medium Transparency Outlined</item>
+        <item>Dialog Solid</item>
+        <item>Dialog Solid Outlined</item>
+    </string-array>
+
+    <string-array name="dst_cpb_preset_names">
+        <item>Aurora Theme</item>
+        <item>Arrow</item>
+        <item>Radioactive</item>
+        <item>Sprite Theme</item>
+        <item>Stars</item>
+    </string-array>
+
+    <string-array name="dst_rvd_preset_names">
+        <item>Round Accent</item>
+        <item>Round Accent Shade</item>
+        <item>Round Dark Gray</item>
+        <item>Round Light Gray</item>
+        <item>Round White</item>
+        <item>Round Outlined</item>
+        <item>Round Semi Transparent</item>
+        <item>Round Outlined Transparent</item>
+        <item>Square Accent</item>
+        <item>Square Accent Shade</item>
+        <item>Square Dark Gray</item>
+        <item>Square Light Gray</item>
+        <item>Square White</item>
+        <item>Square Outlined</item>
+        <item>Square Semi Transparent</item>
+        <item>Square Outlined Transparent</item>
+    </string-array>
+
+    <string-array name="dst_clear_all_preset_names">
+        <item>Accent Button</item>
+        <item>Accent Shade Button</item>
+        <item>Dark Button</item>
+        <item>Grey Button</item>
     </string-array>
 
 </resources>

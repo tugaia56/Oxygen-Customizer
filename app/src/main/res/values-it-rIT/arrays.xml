@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ── DST Utility preset display names (IT) ─────────────────────────── -->
+
+    <string-array name="dst_pin_preset_names">
+        <item>Accento</item>
+        <item>Accento Sfumato</item>
+        <item>Personalizza</item>
+    </string-array>
+
+    <string-array name="dst_dlg_preset_names">
+        <item>Dialogo Trasparenza Alta</item>
+        <item>Dialogo Trasparenza Alta Con Contorno</item>
+        <item>Dialogo Trasparenza Bassa</item>
+        <item>Dialogo Trasparenza Bassa Con Contorno</item>
+        <item>Dialogo Trasparenza Media</item>
+        <item>Dialogo Trasparenza Media Con Contorno</item>
+        <item>Dialogo Solido</item>
+        <item>Dialogo Solido Con Contorno</item>
+    </string-array>
+
+    <string-array name="dst_cpb_preset_names">
+        <item>Aurora Theme</item>
+        <item>Arrow</item>
+        <item>Radioactive</item>
+        <item>Sprite Theme</item>
+        <item>Stars</item>
+    </string-array>
+
+    <string-array name="dst_rvd_preset_names">
+        <item>Rotondo Accento</item>
+        <item>Rotondo Accento Sfumato</item>
+        <item>Rotondo Grigio Scuro</item>
+        <item>Rotondo Grigio Chiaro</item>
+        <item>Rotondo Bianco</item>
+        <item>Rotondo Con Contorno</item>
+        <item>Rotondo Semi Trasparente</item>
+        <item>Rotondo Con Contorno Trasparente</item>
+        <item>Squadrato Accento</item>
+        <item>Squadrato Accento Sfumato</item>
+        <item>Squadrato Grigio Scuro</item>
+        <item>Squadrato Grigio Chiaro</item>
+        <item>Squadrato Bianco</item>
+        <item>Squadrato Con Contorno</item>
+        <item>Squadrato Semi Trasparente</item>
+        <item>Squadrato Con Contorno Trasparente</item>
+    </string-array>
+
+    <string-array name="dst_clear_all_preset_names">
+        <item>Pulsante Accento</item>
+        <item>Pulsante Accento Sfumato</item>
+        <item>Pulsante Scuro</item>
+        <item>Pulsante Grigio</item>
+    </string-array>
+
+</resources>

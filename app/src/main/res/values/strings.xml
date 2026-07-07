@@ -468,6 +468,8 @@
     <string name="qs_blur_max_amount_summary">Set maximum blur amount for Quick Settings.</string>
     <string name="dst_qs_solid_bg">Solid QS Background</string>
     <string name="dst_qs_solid_bg_summary">Replace QS blur with DST background color</string>
+    <string name="dst_notif_freeze">Freeze Notification Accent</string>
+    <string name="dst_notif_freeze_summary">Forces the notification border to use the Accent set in DST (requires SystemUI restart)</string>
 
     <!-- Quick Settings Widgets -->
     <string name="quick_settings_widgets_summary">Show Quick Settings Widgets</string>
@@ -1412,6 +1414,7 @@
     <string name="dark_shadow_preset_pin">PIN Keypad Preset</string>
     <string name="dark_shadow_preset_pin_bg">Background Color</string>
     <string name="dark_shadow_preset_pin_num">Number Color</string>
+    <string name="dark_shadow_pin_accent_toast">PIN colors active after SystemUI restart (no device reboot needed)</string>
     <string name="dark_shadow_restart_systemui">Restart SystemUI</string>
     <string name="dark_shadow_none">None</string>
     <string name="dark_shadow_restart_summary">Apply theme changes</string>

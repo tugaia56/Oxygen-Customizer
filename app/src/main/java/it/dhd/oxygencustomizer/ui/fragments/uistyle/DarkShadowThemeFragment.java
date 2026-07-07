@@ -1,6 +1,5 @@
 package it.dhd.oxygencustomizer.ui.fragments.uistyle;
 
-// fix
 import static it.dhd.oxygencustomizer.utils.DarkShadowUtils.ACCENT1;
 import static it.dhd.oxygencustomizer.utils.DarkShadowUtils.ACCENT2;
 import static it.dhd.oxygencustomizer.utils.DarkShadowUtils.ACCENT3;
@@ -34,11 +33,10 @@ import com.google.android.material.materialswitch.MaterialSwitch;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-
 import it.dhd.oxygencustomizer.R;
 import it.dhd.oxygencustomizer.databinding.FragmentAppListBinding;
 import it.dhd.oxygencustomizer.ui.activity.MainActivity;
-import it.dhd.oxygencustomizer.ui.adapters.DarkShadowColorsAdapter;
+import it.dhd.oxygencustomizer.ui.adapters.DarkShadowColorListener;
 import it.dhd.oxygencustomizer.ui.adapters.FooterWidgetAdapter;
 import it.dhd.oxygencustomizer.ui.adapters.SectionTitleAdapter;
 import it.dhd.oxygencustomizer.ui.base.BaseFragment;
@@ -56,7 +54,7 @@ public class DarkShadowThemeFragment extends BaseFragment {
 
     // ── Base theme overlays ────────────────────────────────────────────────────
     // DSTSUI è mutable (non immutable), quindi abilitarlo a runtime via OC è sicuro (non causa bootloop al boot)
-    String[] overlays = new String[]{"DST", "DSTSTG", "DSTSUI"};
+    private static final String[] overlays = {"DST", "DSTSTG", "DSTSUI"};
 
     // ── Colors adapter (Phase 2) ───────────────────────────────────────────────
     private DstColorsAdapter mColorsAdapter;
@@ -113,46 +111,30 @@ public class DarkShadowThemeFragment extends BaseFragment {
     // ── Clear All button color (com.android.launcher) ────────────────────────
     private static final String PREF_CLEAR_ALL    = "DST_CLEAR_ALL_PRESET";
     private static final String OVERLAY_CLEAR_ALL = "LauncherClearAll";
-    private static final String[] CLEAR_ALL_NAMES = {"Button Accent", "Button Accent Shade", "Button Dark", "Button Grey"};
+    // CLEAR_ALL_NAMES and PIN/DLG/CPB/RVD names loaded from string-array resources for i18n
 
     // ── Keypad PIN button presets (com.android.systemui) ──────────────────────
-    private static final String[] PIN_NAMES    = {"Accent", "Accent Shade", "Rainbow"};
     private static final String[] PIN_OVERLAYS = {"DSTPINAccent", "DSTPINAccentShade", "DSTPINRainbow"};
 
     // ── Keypad PIN number color presets (com.android.systemui) ───────────────
-    private static final String[] PIN_NUM_NAMES    = {"Accent", "Accent Shade", "Rainbow"};
+    // PIN_NUM_NAMES shares the same labels as PIN_NAMES
     private static final String[] PIN_NUM_OVERLAYS = {"DSTNUMPINAccent", "DSTNUMPINAccentShade", "DSTNUMPINRainbow"};
 
 
     // ── Circular Progress Bar presets (android) ──────────────────────────────
     private static final String PREF_CPB = "DST_PRESET_CPB";
-    private static final String[] CPB_NAMES    = {
-        "Aurora Theme", "Arrow", "Radioactive", "Sprite Theme", "Stars"
-    };
     private static final String[] CPB_OVERLAYS = {
         "DSTCPB1", "DSTCPB2", "DSTCPB3", "DSTCPB4", "DSTCPB5"
     };
 
     // ── Dialog style presets (android) ───────────────────────────────────────
     private static final String PREF_DLG = "DST_PRESET_DLG";
-    private static final String[] DLG_NAMES    = {
-        "Dialog Higher Transparent", "Dialog Higher Transparent Outlined",
-        "Dialog Lower Transparent",  "Dialog Lower Transparent Outlined",
-        "Dialog Medium Transparent", "Dialog Medium Transparent Outlined",
-        "Dialog Solid",              "Dialog Solid Outlined"
-    };
     private static final String[] DLG_OVERLAYS = {
         "DSTDHT", "DSTDHTO", "DSTDLT", "DSTDLYO", "DSTDMT", "DSTDMTO", "DSTDS", "DSTDSO"
     };
 
     // ── Volume Button 3 Dots presets (Round + Square, com.android.systemui) ───
     private static final String PREF_RVD = "DST_PRESET_RVD";
-    private static final String[] RVD_NAMES    = {
-        "Round Accent", "Round Accent Shade", "Round Dark Gray", "Round Light Gray", "Round White",
-        "Round Outlined", "Round Semi Transparent", "Round Outlined Transparent",
-        "Square Accent", "Square Accent Shade", "Square Dark Gray", "Square Light Gray", "Square White",
-        "Square Outlined", "Square Semi Transparent", "Square Outlined Transparent"
-    };
     private static final String[] RVD_OVERLAYS = {
         "DSTRVDAccent", "DSTRVDAccentShade", "DSTRVDDarkGray", "DSTRVDLightGray", "DSTRVDWhite",
         "DSTRVDOutlined", "DSTRVDSemiTrasp", "DSTRVDOutlinedTrasp",
@@ -277,12 +259,7 @@ public class DarkShadowThemeFragment extends BaseFragment {
         return binding.getRoot();
     }
 
-    private final DarkShadowColorsAdapter.OnUserAction mListener = new DarkShadowColorsAdapter.OnUserAction() {
-        @Override
-        public void onColorChanged(DarkShadowItem darkShadowItem) {
-
-        }
-
+    private final DarkShadowColorListener mListener = new DarkShadowColorListener() {
         @Override
         public void onEnabledClicked(DarkShadowItem darkShadowItem) {
             loadingDialog.show(getString(R.string.loading_dialog_wait));
@@ -553,12 +530,12 @@ public class DarkShadowThemeFragment extends BaseFragment {
                     if ("DSTPINAccent".equals(newOverlay)) {
                         applyPinAccentFabricated(DarkShadowUtils.getColor(ACCENT1), false);
                         Toast.makeText(requireContext(),
-                                "Colori PIN attivi dopo riavvio UISystem (non del device)",
+                                getString(R.string.dark_shadow_pin_accent_toast),
                                 Toast.LENGTH_LONG).show();
                     } else if ("DSTPINAccentShade".equals(newOverlay)) {
                         applyPinAccentFabricated(DarkShadowUtils.getColor(ACCENT1), true);
                         Toast.makeText(requireContext(),
-                                "Colori PIN attivi dopo riavvio UISystem (non del device)",
+                                getString(R.string.dark_shadow_pin_accent_toast),
                                 Toast.LENGTH_LONG).show();
                     } else if ("DSTNUMPINAccent".equals(newOverlay)) {
                         applyPinNumFabricated(DarkShadowUtils.getColor(ACCENT1));
@@ -614,9 +591,9 @@ public class DarkShadowThemeFragment extends BaseFragment {
         final int[] iconRes = { R.drawable.ic_drawing, R.drawable.ic_mods_ui };
         final Runnable[] actions = {
             () -> showOverlayPresetDialog(getString(R.string.dark_shadow_preset_pin_bg),
-                    PIN_NAMES, PIN_OVERLAYS, PREF_PIN, null, onChanged),
+                    getResources().getStringArray(R.array.dst_pin_preset_names), PIN_OVERLAYS, PREF_PIN, null, onChanged),
             () -> showOverlayPresetDialog(getString(R.string.dark_shadow_preset_pin_num),
-                    PIN_NUM_NAMES, PIN_NUM_OVERLAYS, PREF_PIN_NUM, null, onChanged)
+                    getResources().getStringArray(R.array.dst_pin_preset_names), PIN_NUM_OVERLAYS, PREF_PIN_NUM, null, onChanged)
         };
 
         TypedValue accentTv = new TypedValue();
@@ -677,15 +654,12 @@ public class DarkShadowThemeFragment extends BaseFragment {
     }
 
     private void showClearAllDialog(Runnable onChanged) {
-        String current = OCPreferences.getString(PREF_CLEAR_ALL, null);
-        int currentIdx = -1;
-        for (int i = 0; i < CLEAR_ALL_NAMES.length; i++) {
-            if (CLEAR_ALL_NAMES[i].equals(current)) { currentIdx = i; break; }
-        }
+        String[] clearAllNames = getResources().getStringArray(R.array.dst_clear_all_preset_names);
+        int currentIdx = OCPreferences.getInt(PREF_CLEAR_ALL, -1);
         final int[] selected = {currentIdx};
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.dark_shadow_preset_clear_all)
-                .setSingleChoiceItems(CLEAR_ALL_NAMES, currentIdx, (d, which) -> selected[0] = which)
+                .setSingleChoiceItems(clearAllNames, currentIdx, (d, which) -> selected[0] = which)
                 .setPositiveButton(android.R.string.ok, (d, w) -> {
                     if (selected[0] < 0) return;
                     int color = resolveClearAllColor(selected[0]);
@@ -693,12 +667,12 @@ public class DarkShadowThemeFragment extends BaseFragment {
                             "com.android.launcher", OVERLAY_CLEAR_ALL, "color",
                             "toggle_bar_apply_btn_enabled_color",
                             String.format("0x%08X", 0xFFFFFFFFL & color));
-                    OCPreferences.putString(PREF_CLEAR_ALL, CLEAR_ALL_NAMES[selected[0]]);
+                    OCPreferences.putInt(PREF_CLEAR_ALL, selected[0]);
                     if (onChanged != null) onChanged.run();
                 })
                 .setNeutralButton(R.string.dark_shadow_disable, (d, w) -> {
                     FabricatedUtil.disableOverlay(OVERLAY_CLEAR_ALL);
-                    OCPreferences.putString(PREF_CLEAR_ALL, null);
+                    OCPreferences.putInt(PREF_CLEAR_ALL, -1);
                     if (onChanged != null) onChanged.run();
                 })
                 .setNegativeButton(android.R.string.cancel, null)
@@ -874,14 +848,15 @@ public class DarkShadowThemeFragment extends BaseFragment {
 
     private class DstUtilityAdapter extends RecyclerView.Adapter<DstUtilityAdapter.ViewHolder> {
 
-        private static final int COUNT = 6;
+        private static final int COUNT = 7;
         private static final int TYPE_NORMAL = 0;
         private static final int TYPE_SWITCH = 1;
-        private static final String PREF_QS_BG = "DST_QS_BG_ENABLED";
+        private static final String PREF_QS_BG       = "DST_QS_BG_ENABLED";
+        private static final String PREF_MONET_FREEZE = "DST_MONET_FREEZE";
 
         @Override
         public int getItemViewType(int position) {
-            return position == 4 ? TYPE_SWITCH : TYPE_NORMAL;
+            return (position == 4 || position == 5) ? TYPE_SWITCH : TYPE_NORMAL;
         }
 
         @NonNull @Override
@@ -919,10 +894,11 @@ public class DarkShadowThemeFragment extends BaseFragment {
                     String savedNum = OCPreferences.getString(PREF_PIN_NUM, null);
                     String bgName   = getString(R.string.dark_shadow_none);
                     String numName  = getString(R.string.dark_shadow_none);
+                    String[] pinNames = getResources().getStringArray(R.array.dst_pin_preset_names);
                     for (int i = 0; i < PIN_OVERLAYS.length; i++)
-                        if (PIN_OVERLAYS[i].equals(savedBg)) { bgName = PIN_NAMES[i]; break; }
+                        if (PIN_OVERLAYS[i].equals(savedBg)) { bgName = pinNames[i]; break; }
                     for (int i = 0; i < PIN_NUM_OVERLAYS.length; i++)
-                        if (PIN_NUM_OVERLAYS[i].equals(savedNum)) { numName = PIN_NUM_NAMES[i]; break; }
+                        if (PIN_NUM_OVERLAYS[i].equals(savedNum)) { numName = pinNames[i]; break; }
                     holder.summary.setMaxLines(Integer.MAX_VALUE);
                     holder.summary.setSingleLine(false);
                     holder.summary.setText(
@@ -938,16 +914,17 @@ public class DarkShadowThemeFragment extends BaseFragment {
                     holder.title.setText(R.string.dark_shadow_preset_dlg);
                     String savedOverlay = OCPreferences.getString(PREF_DLG, null);
                     String displayName  = getString(R.string.dark_shadow_none);
+                    String[] dlgNames = getResources().getStringArray(R.array.dst_dlg_preset_names);
                     if (savedOverlay != null) {
                         for (int i = 0; i < DLG_OVERLAYS.length; i++) {
-                            if (DLG_OVERLAYS[i].equals(savedOverlay)) { displayName = DLG_NAMES[i]; break; }
+                            if (DLG_OVERLAYS[i].equals(savedOverlay)) { displayName = dlgNames[i]; break; }
                         }
                     }
                     holder.summary.setText(displayName);
                     holder.container.setOnClickListener(v ->
                             showOverlayPresetDialog(
                                     getString(R.string.dark_shadow_preset_dlg),
-                                    DLG_NAMES, DLG_OVERLAYS, PREF_DLG, null,
+                                    getResources().getStringArray(R.array.dst_dlg_preset_names), DLG_OVERLAYS, PREF_DLG, null,
                                     () -> { if (mUtilityAdapter != null) mUtilityAdapter.notifyItemChanged(1); }));
                     break;
                 }
@@ -956,16 +933,17 @@ public class DarkShadowThemeFragment extends BaseFragment {
                     holder.title.setText(R.string.dark_shadow_preset_cpb);
                     String savedOverlay = OCPreferences.getString(PREF_CPB, null);
                     String displayName  = getString(R.string.dark_shadow_none);
+                    String[] cpbNames = getResources().getStringArray(R.array.dst_cpb_preset_names);
                     if (savedOverlay != null) {
                         for (int i = 0; i < CPB_OVERLAYS.length; i++) {
-                            if (CPB_OVERLAYS[i].equals(savedOverlay)) { displayName = CPB_NAMES[i]; break; }
+                            if (CPB_OVERLAYS[i].equals(savedOverlay)) { displayName = cpbNames[i]; break; }
                         }
                     }
                     holder.summary.setText(displayName);
                     holder.container.setOnClickListener(v ->
                             showOverlayPresetDialog(
                                     getString(R.string.dark_shadow_preset_cpb),
-                                    CPB_NAMES, CPB_OVERLAYS, PREF_CPB, null,
+                                    getResources().getStringArray(R.array.dst_cpb_preset_names), CPB_OVERLAYS, PREF_CPB, null,
                                     () -> { if (mUtilityAdapter != null) mUtilityAdapter.notifyItemChanged(2); }));
                     break;
                 }
@@ -974,16 +952,17 @@ public class DarkShadowThemeFragment extends BaseFragment {
                     holder.title.setText(R.string.dark_shadow_preset_rvd);
                     String savedOverlay = OCPreferences.getString(PREF_RVD, null);
                     String displayName  = getString(R.string.dark_shadow_none);
+                    String[] rvdNames = getResources().getStringArray(R.array.dst_rvd_preset_names);
                     if (savedOverlay != null) {
                         for (int i = 0; i < RVD_OVERLAYS.length; i++) {
-                            if (RVD_OVERLAYS[i].equals(savedOverlay)) { displayName = RVD_NAMES[i]; break; }
+                            if (RVD_OVERLAYS[i].equals(savedOverlay)) { displayName = rvdNames[i]; break; }
                         }
                     }
                     holder.summary.setText(displayName);
                     holder.container.setOnClickListener(v ->
                             showOverlayPresetDialog(
                                     getString(R.string.dark_shadow_preset_rvd),
-                                    RVD_NAMES, RVD_OVERLAYS, PREF_RVD, null,
+                                    getResources().getStringArray(R.array.dst_rvd_preset_names), RVD_OVERLAYS, PREF_RVD, null,
                                     () -> { if (mUtilityAdapter != null) mUtilityAdapter.notifyItemChanged(3); }));
                     break;
                 }
@@ -1002,13 +981,29 @@ public class DarkShadowThemeFragment extends BaseFragment {
                     break;
                 }
                 case 5: {
+                    SwitchViewHolder svh = (SwitchViewHolder) holder;
+                    svh.icon.setImageResource(R.drawable.ic_notifications);
+                    svh.title.setText(R.string.dst_notif_freeze);
+                    svh.summary.setText(R.string.dst_notif_freeze_summary);
+                    svh.switchWidget.setOnCheckedChangeListener(null);
+                    svh.switchWidget.setChecked(OCPreferences.getBoolean(PREF_MONET_FREEZE, false));
+                    svh.switchWidget.setOnCheckedChangeListener((btn, isChecked) -> {
+                        OCPreferences.putBoolean(PREF_MONET_FREEZE, isChecked);
+                        AppUtils.restartScope("systemui");
+                    });
+                    svh.container.setOnClickListener(v -> svh.switchWidget.toggle());
+                    break;
+                }
+                case 6: {
                     holder.icon.setImageResource(R.drawable.ic_recents);
                     holder.title.setText(R.string.dark_shadow_preset_clear_all);
-                    String saved = OCPreferences.getString(PREF_CLEAR_ALL, null);
-                    holder.summary.setText(saved != null ? saved : getString(R.string.dark_shadow_none));
+                    int savedIdx = OCPreferences.getInt(PREF_CLEAR_ALL, -1);
+                    String[] caNames = getResources().getStringArray(R.array.dst_clear_all_preset_names);
+                    holder.summary.setText(savedIdx >= 0 && savedIdx < caNames.length
+                            ? caNames[savedIdx] : getString(R.string.dark_shadow_none));
                     holder.container.setOnClickListener(v ->
                             showClearAllDialog(
-                                    () -> { if (mUtilityAdapter != null) mUtilityAdapter.notifyItemChanged(5); }));
+                                    () -> { if (mUtilityAdapter != null) mUtilityAdapter.notifyItemChanged(6); }));
                     break;
                 }
             }

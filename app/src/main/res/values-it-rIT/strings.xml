@@ -438,6 +438,8 @@
     <string name="qs_blur_max_amount_summary">Imposta il valore massimo di sfocatura per le Impostazioni Rapide.</string>
     <string name="dst_qs_solid_bg">Sfondo QS Solido</string>
     <string name="dst_qs_solid_bg_summary">Sostituisce la sfocatura QS con il colore di sfondo DST</string>
+    <string name="dst_notif_freeze">Blocca Accento Bordo Notifiche</string>
+    <string name="dst_notif_freeze_summary">Forza il bordo delle notifiche a prendere l\'Accent impostato in DST (richiede riavvio SystemUI)</string>
     <!-- Quick Settings Widgets -->
     <string name="quick_settings_widgets_summary">Mostra Widget delle Impostazioni Rapide</string>
     <string name="add_widget">Aggiungi Widget</string>
@@ -1293,6 +1295,7 @@
     <string name="dark_shadow_preset_pin">Preset Tastierino PIN</string>
     <string name="dark_shadow_preset_pin_bg">Colore Sfondo</string>
     <string name="dark_shadow_preset_pin_num">Colore Numeri</string>
+    <string name="dark_shadow_pin_accent_toast">Colori PIN attivi dopo riavvio SystemUI (non del dispositivo)</string>
     <string name="dark_shadow_restart_systemui">Riavvia SystemUI</string>
     <string name="dark_shadow_none">Nessuno</string>
     <string name="dark_shadow_restart_summary">Applica le modifiche al tema</string>

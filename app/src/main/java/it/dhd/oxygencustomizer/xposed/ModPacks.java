@@ -11,6 +11,7 @@ import it.dhd.oxygencustomizer.xposed.hooks.HookTester;
 import it.dhd.oxygencustomizer.xposed.hooks.framework.Buttons;
 import it.dhd.oxygencustomizer.xposed.hooks.framework.DarkMode;
 import it.dhd.oxygencustomizer.xposed.hooks.framework.MemcEnhancer;
+import it.dhd.oxygencustomizer.xposed.hooks.framework.MonetFreeze;
 import it.dhd.oxygencustomizer.xposed.hooks.framework.OplusStartingWindowManager;
 import it.dhd.oxygencustomizer.xposed.hooks.framework.PackageManager;
 import it.dhd.oxygencustomizer.xposed.hooks.framework.SleepOnFlat;
@@ -187,6 +188,9 @@ public class ModPacks {
                     modPacks.add(FluidMusic.class);
 
                     modPacks.add(MiscMods.class);
+
+                    // DST notification border accent freeze
+                    modPacks.add(MonetFreeze.class);
                 }
             }
             case Constants.Packages.SETTINGS -> {
