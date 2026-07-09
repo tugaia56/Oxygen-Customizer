@@ -247,9 +247,13 @@ public class DarkShadowThemeFragment extends BaseFragment {
                 disableShadowTheme();
             }
         });
-        binding.appFunctionSwitch.setSwitchChecked(
-                OverlayUtil.isOverlayEnabled("OxygenCustomizerComponent" + overlays[0] + Build.VERSION.SDK_INT + ".overlay")
-        );
+        // Run the shell check off the main thread to avoid ~2 s freeze on open
+        final String overlayPkg = "OxygenCustomizerComponent" + overlays[0] + Build.VERSION.SDK_INT + ".overlay";
+        new Thread(() -> {
+            boolean enabled = OverlayUtil.isOverlayEnabled(overlayPkg);
+            if (isAdded()) requireActivity().runOnUiThread(() ->
+                    binding.appFunctionSwitch.setSwitchChecked(enabled));
+        }).start();
 
         // RecyclerView
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));

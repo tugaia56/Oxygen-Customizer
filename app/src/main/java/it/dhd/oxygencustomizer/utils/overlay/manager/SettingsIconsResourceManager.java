@@ -86,7 +86,7 @@ public class SettingsIconsResourceManager {
 
     private static String getIconColor(int iconColor) {
         return switch (iconColor) {
-            case 0 -> "@*android:color/system_accent1_600";
+            case 0 -> "@*android:color/accent_material_dark";
             case 1 -> "#FFFFFF";
             default -> "#000000";
         };
@@ -94,7 +94,7 @@ public class SettingsIconsResourceManager {
 
     private static String getBackgroundColor(int backgroundColor) {
         return switch (backgroundColor) {
-            case 0 -> "@*android:color/system_accent1_600";
+            case 0 -> "@*android:color/accent_material_dark";
             case 1 -> "#FFFFFF";
             default -> "#000000";
         };

@@ -13,12 +13,11 @@ import it.dhd.oxygencustomizer.xposed.XposedMods;
 
 public class MonetFreeze extends XposedMods {
 
-    // ── preference keys ───────────────────────────────────────────────────────
-    private static final String PREF_MONET_FREEZE         = "DST_MONET_FREEZE";
-    private static final String PREF_ACCENT1_COLOR        = "DSTACCENT1";
-    private static final String PREF_PIN                  = "DST_PRESET_PIN";
-    private static final String PREF_PIN_NUM              = "DST_PRESET_PIN_NUM";
-    private static final String PREF_PIN_RAINBOW_COLOR    = "DST_PIN_RAINBOW_COLOR";
+    private static final String PREF_MONET_FREEZE          = "DST_MONET_FREEZE";
+    private static final String PREF_ACCENT1_COLOR         = "DSTACCENT1";
+    private static final String PREF_PIN                   = "DST_PRESET_PIN";
+    private static final String PREF_PIN_NUM               = "DST_PRESET_PIN_NUM";
+    private static final String PREF_PIN_RAINBOW_COLOR     = "DST_PIN_RAINBOW_COLOR";
     private static final String PREF_PIN_NUM_RAINBOW_COLOR = "DST_PIN_NUM_RAINBOW_COLOR";
 
     public MonetFreeze(Context context) {
@@ -37,61 +36,55 @@ public class MonetFreeze extends XposedMods {
 
         XResources xRes = resParam.res;
 
-        // 1. Freeze notification / accent border (opt-in switch)
+        // Freeze accent_material_dark to the user's chosen colour
         if (Xprefs.getBoolean(PREF_MONET_FREEZE, false)) {
             int accent = Xprefs.getInt(PREF_ACCENT1_COLOR, Color.RED);
             xRes.setReplacement("android", "color", "accent_material_dark", accent);
         }
 
-        // 2. PIN keyboard background colors (active from boot, no race with post-exec.sh)
+        // PIN keyboard background colours
         String pinPref = Xprefs.getString(PREF_PIN, null);
         if (pinPref != null) {
-            int pinColor;
-            boolean isShade;
             switch (pinPref) {
                 case "DSTPINAccent":
-                    pinColor = Xprefs.getInt(PREF_ACCENT1_COLOR, Color.RED);
-                    isShade  = false;
-                    applyPinBgColors(xRes, pinColor, isShade);
+                    applyPinBgColors(xRes, Xprefs.getInt(PREF_ACCENT1_COLOR, Color.RED), false);
                     break;
                 case "DSTPINAccentShade":
-                    pinColor = Xprefs.getInt(PREF_ACCENT1_COLOR, Color.RED);
-                    isShade  = true;
-                    applyPinBgColors(xRes, pinColor, isShade);
+                    applyPinBgColors(xRes, Xprefs.getInt(PREF_ACCENT1_COLOR, Color.RED), true);
                     break;
                 case "DSTPINRainbow":
-                    pinColor = Xprefs.getInt(PREF_PIN_RAINBOW_COLOR, 0xFFFFFFFF);
-                    applyPinBgColors(xRes, pinColor, false);
+                    applyPinBgColors(xRes, Xprefs.getInt(PREF_PIN_RAINBOW_COLOR, 0xFFFFFFFF), false);
                     break;
             }
         }
 
-        // 3. PIN number text color
+        // PIN number text colour
         String pinNumPref = Xprefs.getString(PREF_PIN_NUM, null);
         if (pinNumPref != null) {
-            int numColor;
             switch (pinNumPref) {
                 case "DSTNUMPINAccent":
-                    numColor = Xprefs.getInt(PREF_ACCENT1_COLOR, Color.RED);
-                    applyPinNumColor(xRes, numColor);
+                    applyPinNumColor(xRes, Xprefs.getInt(PREF_ACCENT1_COLOR, Color.RED));
                     break;
-                case "DSTNUMPINAccentShade":
-                    int accent = Xprefs.getInt(PREF_ACCENT1_COLOR, Color.RED);
-                    numColor = 0x80000000 | (accent & 0x00FFFFFF);
-                    applyPinNumColor(xRes, numColor);
+                case "DSTNUMPINAccentShade": {
+                    int a = Xprefs.getInt(PREF_ACCENT1_COLOR, Color.RED);
+                    applyPinNumColor(xRes, 0x80000000 | (a & 0x00FFFFFF));
                     break;
+                }
                 case "DSTNUMPINRainbow":
-                    numColor = Xprefs.getInt(PREF_PIN_NUM_RAINBOW_COLOR, 0xFFFF0000);
-                    applyPinNumColor(xRes, numColor);
+                    applyPinNumColor(xRes, Xprefs.getInt(PREF_PIN_NUM_RAINBOW_COLOR, 0xFFFF0000));
                     break;
             }
         }
     }
 
-    /**
-     * Mirrors applyPinAccentFabricated() in DarkShadowThemeFragment,
-     * but via XResources so it's active from the very first SystemUI boot.
-     */
+    @Override
+    public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {}
+
+    @Override
+    public boolean listensTo(String packageName) {
+        return SYSTEM_UI.equals(packageName);
+    }
+
     private void applyPinBgColors(XResources xRes, int accent, boolean isShade) {
         int rgb    = accent & 0x00FFFFFF;
         int full   = 0xFF000000 | rgb;
@@ -114,17 +107,8 @@ public class MonetFreeze extends XposedMods {
         xRes.setReplacement(SYSTEM_UI, "color", "coui_numeric_keyboard_dark_word_text_normal_light_color", full);
     }
 
-    /** Mirrors applyPinNumFabricated() in DarkShadowThemeFragment. */
     private void applyPinNumColor(XResources xRes, int color) {
-        int full = 0xFF000000 | (color & 0x00FFFFFF);
-        xRes.setReplacement(SYSTEM_UI, "color", "coui_numeric_keyboard_number_color", full);
-    }
-
-    @Override
-    public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {}
-
-    @Override
-    public boolean listensTo(String packageName) {
-        return SYSTEM_UI.equals(packageName);
+        xRes.setReplacement(SYSTEM_UI, "color", "coui_numeric_keyboard_number_color",
+                0xFF000000 | (color & 0x00FFFFFF));
     }
 }
