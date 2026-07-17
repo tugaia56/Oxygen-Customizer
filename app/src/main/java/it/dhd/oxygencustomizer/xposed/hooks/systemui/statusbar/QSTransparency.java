@@ -19,6 +19,7 @@ import android.graphics.Color;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
+import android.view.View;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
@@ -36,7 +37,7 @@ public class QSTransparency extends XposedMods {
     private Object mScrimControllerExImp = null;
     private float maxBlurRadius = 1f;
     private boolean dstQsBgEnabled = false;
-    private int dstQsBgColor = Color.BLACK;
+    private int dstQsBgColor = Color.DKGRAY;
 
     public QSTransparency(Context context) {
         super(context);
@@ -53,10 +54,14 @@ public class QSTransparency extends XposedMods {
         blurRadius = Xprefs.getSliderInt(BLUR_RADIUS_VALUE, 60);
         maxBlurRadius = Xprefs.getInt(QSPANEL_MAX_BLUR_AMOUNT, 100) / 100f;
 
-        dstQsBgEnabled = Xprefs.getBoolean("DST_QS_BG_ENABLED", false);
-        if (dstQsBgEnabled) {
+        // Read color BEFORE enabling the flag: the render thread may call onDraw()
+        // between the two IPC calls, and would see dstQsBgEnabled=true with the
+        // stale initial value Color.BLACK → visible black flash / stuck black bg.
+        boolean newQsBgEnabled = Xprefs.getBoolean("DST_QS_BG_ENABLED", false);
+        if (newQsBgEnabled) {
             dstQsBgColor = Xprefs.getInt("DSTBACKGROUND", Color.DKGRAY);
         }
+        dstQsBgEnabled = newQsBgEnabled;
 
     }
 
@@ -137,8 +142,10 @@ public class QSTransparency extends XposedMods {
                     if (isBehind && isQsVisible) {
                         if (dstQsBgEnabled) {
                             param.args[0] = 0f;
+                            ((View) param.thisObject).setBackgroundColor(dstQsBgColor);
                         } else {
                             param.args[0] = constrain(blurAmount, 0.0f, maxBlurRadius);
+                            ((View) param.thisObject).setBackgroundColor(Color.TRANSPARENT);
                         }
                     }
                 });

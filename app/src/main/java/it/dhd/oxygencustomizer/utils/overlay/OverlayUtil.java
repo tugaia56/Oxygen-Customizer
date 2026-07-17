@@ -36,7 +36,8 @@ public class OverlayUtil {
     }
 
     public static boolean isOverlayEnabled(String pkgName) {
-        return Shell.cmd("[[ $(cmd overlay list | grep -o '\\[x\\] " + pkgName + "') ]] && echo 1 || echo 0").exec().getOut().get(0).equals("1");
+        List<String> out = Shell.cmd("[[ $(cmd overlay list | grep -o '\\[x\\] " + pkgName + "') ]] && echo 1 || echo 0").exec().getOut();
+        return !out.isEmpty() && out.get(0).equals("1");
     }
 
     public static boolean isOverlayDisabled(String pkgName) {

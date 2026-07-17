@@ -36,7 +36,7 @@
         <item>Rotondo Bianco</item>
         <item>Rotondo con Bordo</item>
         <item>Rotondo Semi Trasparente</item>
-        <item>Rotondo con Bordo Trasparente</item>
+        <item>Rotondo Trasparente con Bordo</item>
         <item>Squadrato Accento</item>
         <item>Squadrato Accento Sfumato</item>
         <item>Squadrato Grigio Scuro</item>
@@ -44,7 +44,7 @@
         <item>Squadrato Bianco</item>
         <item>Squadrato con Bordo</item>
         <item>Squadrato Semi Trasparente</item>
-        <item>Squadrato con Bordo Trasparente</item>
+        <item>Squadrato Trasparente con Bordo</item>
     </string-array>
 
     <string-array name="dst_clear_all_preset_names">

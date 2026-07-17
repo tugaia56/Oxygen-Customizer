@@ -170,6 +170,12 @@ public class DarkShadowThemeFragment extends BaseFragment {
     }
 
     @Override
+    public void onDestroyView() {
+        binding = null;
+        super.onDestroyView();
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
@@ -240,6 +246,10 @@ public class DarkShadowThemeFragment extends BaseFragment {
             switchContainer.setBackgroundResource(R.drawable.dst_enable_switch_bg);
         }
         binding.appFunctionSwitch.setTitle(getString(R.string.dark_shadow_enable_theme));
+        // Pattern corretto Android: detach → set state → attach
+        // Evita che setSwitchChecked spari enable/disableShadowTheme durante l'init.
+        binding.appFunctionSwitch.setSwitchChangeListener(null);
+        binding.appFunctionSwitch.setSwitchChecked(OCPreferences.getBoolean("DST_ENABLED", false));
         binding.appFunctionSwitch.setSwitchChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 enableShadowTheme();
@@ -247,13 +257,6 @@ public class DarkShadowThemeFragment extends BaseFragment {
                 disableShadowTheme();
             }
         });
-        // Run the shell check off the main thread to avoid ~2 s freeze on open
-        final String overlayPkg = "OxygenCustomizerComponent" + overlays[0] + Build.VERSION.SDK_INT + ".overlay";
-        new Thread(() -> {
-            boolean enabled = OverlayUtil.isOverlayEnabled(overlayPkg);
-            if (isAdded()) requireActivity().runOnUiThread(() ->
-                    binding.appFunctionSwitch.setSwitchChecked(enabled));
-        }).start();
 
         // RecyclerView
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -335,6 +338,7 @@ public class DarkShadowThemeFragment extends BaseFragment {
     };
 
     private void enableShadowTheme() {
+        OCPreferences.putBoolean("DST_ENABLED", true);
         loadingDialog.show(getString(R.string.loading_dialog_wait));
         for (String overlay : overlays) {
             OverlayUtil.enableOverlay("OxygenCustomizerComponent" + overlay + Build.VERSION.SDK_INT + ".overlay");
@@ -343,6 +347,7 @@ public class DarkShadowThemeFragment extends BaseFragment {
     }
 
     private void disableShadowTheme() {
+        OCPreferences.putBoolean("DST_ENABLED", false);
         loadingDialog.show(getString(R.string.loading_dialog_wait));
         for (String overlay : overlays) {
             OverlayUtil.disableOverlay("OxygenCustomizerComponent" + overlay + Build.VERSION.SDK_INT + ".overlay");

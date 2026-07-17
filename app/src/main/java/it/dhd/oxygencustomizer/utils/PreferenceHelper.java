@@ -326,7 +326,8 @@ public class PreferenceHelper {
 
     private PreferenceHelper(ExtendedSharedPreferences prefs) {
         mPreferences = prefs;
-        mOsVersion = Shell.cmd("getprop ro.build.display.id").exec().getOut().get(0);
+        List<String> osOut = Shell.cmd("getprop ro.build.display.id").exec().getOut();
+        mOsVersion = osOut.isEmpty() ? "" : osOut.get(0);
         instance = this;
     }
 

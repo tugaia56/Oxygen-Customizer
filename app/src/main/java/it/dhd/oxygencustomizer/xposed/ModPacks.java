@@ -43,6 +43,7 @@ import it.dhd.oxygencustomizer.xposed.hooks.systemui.SuperPowerSaveObserver;
 import it.dhd.oxygencustomizer.xposed.hooks.systemui.SystemNotificationListener;
 import it.dhd.oxygencustomizer.xposed.hooks.systemui.ThemeEnabler;
 import it.dhd.oxygencustomizer.xposed.hooks.systemui.ThermalProvider;
+import it.dhd.oxygencustomizer.xposed.hooks.systemui.DstRvdStyle;
 import it.dhd.oxygencustomizer.xposed.hooks.systemui.VolumePanel;
 import it.dhd.oxygencustomizer.xposed.hooks.systemui.advancedreboot.AdvancedReboot;
 import it.dhd.oxygencustomizer.xposed.hooks.systemui.aod.AodClock;
@@ -180,6 +181,9 @@ public class ModPacks {
 
                     // Volume Panel
                     modPacks.add(VolumePanel.class);
+
+                    // DST RVD style (volume icon preset via XResources)
+                    modPacks.add(DstRvdStyle.class);
 
                     modPacks.add(GestureNavbarManager.class);
                     modPacks.add(AdaptivePlayback.class);

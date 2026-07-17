@@ -85,12 +85,10 @@ public final class DarkShadowUtils {
 
 
     public static int getColor(DarkShadowItem darkShadowItem) {
-        Log.w("DarkShadowUtils", "getColor: " + darkShadowItem.toString());
         return OCPreferences.getInt("DST" + darkShadowItem.getOverlayName(), darkShadowItem.getColor());
     }
 
     public static void saveColor(DarkShadowItem darkShadowItem) {
-        Log.w("DarkShadowUtils", "saveColor: " + darkShadowItem.toString());
         OCPreferences.putInt("DST" + darkShadowItem.getOverlayName(), darkShadowItem.getColor());
     }
 
