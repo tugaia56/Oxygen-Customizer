@@ -11,6 +11,7 @@ import it.dhd.oxygencustomizer.xposed.hooks.HookTester;
 import it.dhd.oxygencustomizer.xposed.hooks.framework.Buttons;
 import it.dhd.oxygencustomizer.xposed.hooks.framework.DarkMode;
 import it.dhd.oxygencustomizer.xposed.hooks.framework.MemcEnhancer;
+import it.dhd.oxygencustomizer.xposed.hooks.framework.DstCpbStyle;
 import it.dhd.oxygencustomizer.xposed.hooks.framework.MonetFreeze;
 import it.dhd.oxygencustomizer.xposed.hooks.framework.OplusStartingWindowManager;
 import it.dhd.oxygencustomizer.xposed.hooks.framework.PackageManager;
@@ -184,6 +185,9 @@ public class ModPacks {
 
                     // DST RVD style (volume icon preset via XResources)
                     modPacks.add(DstRvdStyle.class);
+
+                    // DST CPB style (circular progress bar preset via XResources)
+                    modPacks.add(DstCpbStyle.class);
 
                     modPacks.add(GestureNavbarManager.class);
                     modPacks.add(AdaptivePlayback.class);

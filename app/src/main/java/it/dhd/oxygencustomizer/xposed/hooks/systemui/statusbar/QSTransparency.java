@@ -1,10 +1,8 @@
 package it.dhd.oxygencustomizer.xposed.hooks.systemui.statusbar;
 
 import static de.robv.android.xposed.XposedBridge.hookAllMethods;
-import static de.robv.android.xposed.XposedHelpers.callMethod;
 import static de.robv.android.xposed.XposedHelpers.findClass;
 import static de.robv.android.xposed.XposedHelpers.findField;
-import static de.robv.android.xposed.XposedHelpers.getBooleanField;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
 import static it.dhd.oxygencustomizer.utils.Constants.Packages.SYSTEM_UI;
 import static it.dhd.oxygencustomizer.utils.Constants.Preferences.QuickSettings.BLUR_RADIUS_VALUE;
@@ -15,16 +13,13 @@ import static it.dhd.oxygencustomizer.utils.Constants.Preferences.QuickSettings.
 import static it.dhd.oxygencustomizer.xposed.XPrefs.Xprefs;
 
 import android.annotation.SuppressLint;
-import android.graphics.Color;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
-import android.view.View;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import it.dhd.oxygencustomizer.xposed.XposedMods;
-import it.dhd.oxygencustomizer.xposed.utils.toolkit.ReflectedClass;
 
 public class QSTransparency extends XposedMods {
 
@@ -34,10 +29,7 @@ public class QSTransparency extends XposedMods {
     private float alpha = 40;
     private boolean blurEnabled = false;
     private int blurRadius = 60;
-    private Object mScrimControllerExImp = null;
     private float maxBlurRadius = 1f;
-    private boolean dstQsBgEnabled = false;
-    private int dstQsBgColor = Color.DKGRAY;
 
     public QSTransparency(Context context) {
         super(context);
@@ -53,18 +45,9 @@ public class QSTransparency extends XposedMods {
         blurEnabled = Xprefs.getBoolean(QSPANEL_BLUR_SWITCH, false);
         blurRadius = Xprefs.getSliderInt(BLUR_RADIUS_VALUE, 60);
         maxBlurRadius = Xprefs.getInt(QSPANEL_MAX_BLUR_AMOUNT, 100) / 100f;
-
-        // Read color BEFORE enabling the flag: the render thread may call onDraw()
-        // between the two IPC calls, and would see dstQsBgEnabled=true with the
-        // stale initial value Color.BLACK → visible black flash / stuck black bg.
-        boolean newQsBgEnabled = Xprefs.getBoolean("DST_QS_BG_ENABLED", false);
-        if (newQsBgEnabled) {
-            dstQsBgColor = Xprefs.getInt("DSTBACKGROUND", Color.DKGRAY);
-        }
-        dstQsBgEnabled = newQsBgEnabled;
-
     }
 
+    @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) {
         setQsTransparency(loadPackageParam);
         setBlurRadius();
@@ -81,7 +64,6 @@ public class QSTransparency extends XposedMods {
         hookAllMethods(ScrimControllerClass, "updateScrimColor", new XC_MethodHook() {
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 if (!qsTransparencyActive) return;
-                if (Build.VERSION.SDK_INT >= 35) return;
 
                 int alphaIndex = param.args[2] instanceof Float ? 2 : 1;
                 String scrimState = getObjectField(param.thisObject, "mState").toString();
@@ -105,104 +87,6 @@ public class QSTransparency extends XposedMods {
                 }
             }
         });
-
-        if (Build.VERSION.SDK_INT >= 35) {
-            hookQs();
-        }
-
-    }
-
-    private void hookQs() {
-        ReflectedClass ScrimControllerExImp = ReflectedClass.of("com.oplus.systemui.statusbar.phone.ScrimControllerExImp");
-        ScrimControllerExImp
-                .afterConstruction()
-                .run(param -> {
-                    mScrimControllerExImp = param.thisObject;
-                });
-
-        ReflectedClass ScrimViewExImp = ReflectedClass.of("com.oplus.systemui.scrim.ScrimViewExImp");
-
-        ScrimViewExImp
-                .before("setBlurAmount")
-                .run(param -> {
-                    if (mScrimControllerExImp == null) return;
-                    float blurAmount = (float) param.args[0];
-                    boolean isBehind = false;
-                    try {
-                        isBehind = (boolean) callMethod(param.thisObject, "isBehind");
-                    } catch (Throwable ignored) {
-                        isBehind = getBooleanField(param.thisObject, "isBehind");
-                    }
-                    boolean isQsVisible = false;
-                    try {
-                        isQsVisible = (boolean) callMethod(mScrimControllerExImp, "isQsVisible");
-                    } catch (Throwable ignored) {
-                        isQsVisible = getBooleanField(mScrimControllerExImp, "isQsVisible");
-                    }
-                    if (isBehind && isQsVisible) {
-                        if (dstQsBgEnabled) {
-                            param.args[0] = 0f;
-                            ((View) param.thisObject).setBackgroundColor(dstQsBgColor);
-                        } else {
-                            param.args[0] = constrain(blurAmount, 0.0f, maxBlurRadius);
-                            ((View) param.thisObject).setBackgroundColor(Color.TRANSPARENT);
-                        }
-                    }
-                });
-
-        ScrimViewExImp
-                .after("onDraw")
-                .run(param -> {
-                    if (!dstQsBgEnabled) return;
-                    if (mScrimControllerExImp == null) return;
-                    boolean isBehind = false;
-                    try {
-                        isBehind = (boolean) callMethod(param.thisObject, "isBehind");
-                    } catch (Throwable ignored) {
-                        try { isBehind = getBooleanField(param.thisObject, "isBehind"); } catch (Throwable ignored2) {}
-                    }
-                    boolean isQsVisible = false;
-                    try {
-                        isQsVisible = (boolean) callMethod(mScrimControllerExImp, "isQsVisible");
-                    } catch (Throwable ignored) {
-                        try { isQsVisible = getBooleanField(mScrimControllerExImp, "isQsVisible"); } catch (Throwable ignored2) {}
-                    }
-                    if (isBehind && isQsVisible) {
-                        // Paint directly over whatever the scrim drew
-                        ((android.graphics.Canvas) param.args[0]).drawColor(dstQsBgColor);
-                    }
-                });
-
-        // Ensure full opacity for solid background
-        try {
-            ScrimViewExImp
-                    .before("setViewAlpha")
-                    .run(param -> {
-                        if (!dstQsBgEnabled) return;
-                        if (mScrimControllerExImp == null) return;
-                        boolean isBehind = false;
-                        try {
-                            isBehind = (boolean) callMethod(param.thisObject, "isBehind");
-                        } catch (Throwable ignored) {
-                            try { isBehind = getBooleanField(param.thisObject, "isBehind"); } catch (Throwable ignored2) {}
-                        }
-                        boolean isQsVisible = false;
-                        try {
-                            isQsVisible = (boolean) callMethod(mScrimControllerExImp, "isQsVisible");
-                        } catch (Throwable ignored) {
-                            try { isQsVisible = getBooleanField(mScrimControllerExImp, "isQsVisible"); } catch (Throwable ignored2) {}
-                        }
-                        if (isBehind && isQsVisible) {
-                            param.args[0] = 1.0f;
-                        }
-                    });
-        } catch (Throwable t) {
-            log("DST QS BG: setViewAlpha hook failed: " + t.getMessage());
-        }
-    }
-
-    private float constrain(float amount, float low, float high) {
-        return amount < low ? low : (amount > high ? high : amount);
     }
 
     private void setBlurRadius() {

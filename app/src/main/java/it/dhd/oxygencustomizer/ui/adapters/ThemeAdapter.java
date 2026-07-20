@@ -22,11 +22,15 @@ import java.util.ArrayList;
 
 import it.dhd.oxygencustomizer.OxygenCustomizer;
 import it.dhd.oxygencustomizer.R;
+import it.dhd.oxygencustomizer.ui.activity.MainActivity;
 import it.dhd.oxygencustomizer.ui.dialogs.LoadingDialog;
+import it.dhd.oxygencustomizer.ui.fragments.uistyle.DarkShadowThemeFragment;
 import it.dhd.oxygencustomizer.ui.models.ThemeModel;
 import it.dhd.oxygencustomizer.utils.overlay.OverlayUtil;
 
 public class ThemeAdapter extends RecyclerView.Adapter<ThemeAdapter.ViewHolder> {
+
+    private static final String DST_SENTINEL = "__DST__";
 
     Context context;
     ArrayList<ThemeModel> itemList;
@@ -51,9 +55,20 @@ public class ThemeAdapter extends RecyclerView.Adapter<ThemeAdapter.ViewHolder> 
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.style_name.setText(itemList.get(position).getThemeName());
+        ThemeModel item = itemList.get(position);
+        holder.style_name.setText(item.getThemeName());
         holder.desc.setVisibility(View.GONE);
         holder.icon_preview.setVisibility(View.GONE);
+
+        if (DST_SENTINEL.equals(item.getPkgName())) {
+            holder.btn_enable.setVisibility(View.GONE);
+            holder.btn_disable.setVisibility(View.GONE);
+            holder.container.findViewById(R.id.icon_selected).setVisibility(View.INVISIBLE);
+            holder.style_name.setTextColor(ContextCompat.getColor(context, R.color.text_color_primary));
+            holder.container.setOnClickListener(v ->
+                    MainActivity.replaceFragment(new DarkShadowThemeFragment()));
+            return;
+        }
 
         refreshButton(holder);
 
@@ -70,7 +85,9 @@ public class ThemeAdapter extends RecyclerView.Adapter<ThemeAdapter.ViewHolder> 
     public void onViewAttachedToWindow(@NonNull ViewHolder holder) {
         super.onViewAttachedToWindow(holder);
 
-        itemSelected(holder.container, itemList.get(holder.getBindingAdapterPosition()).isEnabled());
+        int pos = holder.getBindingAdapterPosition();
+        if (pos < 0 || DST_SENTINEL.equals(itemList.get(pos).getPkgName())) return;
+        itemSelected(holder.container, itemList.get(pos).isEnabled());
         refreshButton(holder);
     }
 

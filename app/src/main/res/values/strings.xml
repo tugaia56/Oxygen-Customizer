@@ -469,7 +469,9 @@
     <string name="dst_qs_solid_bg">Solid QS Background</string>
     <string name="dst_qs_solid_bg_summary">Replace QS blur with DST background color</string>
     <string name="dst_notif_freeze">Freeze Notification Accent</string>
-    <string name="dst_notif_freeze_summary">Forces the notification border to use the Accent set in DST (requires SystemUI restart)</string>
+    <string name="dst_notif_freeze_summary">Locks notification border to DST accent color</string>
+    <string name="dst_sbi_accent">Statusbar Icon Accent Color</string>
+    <string name="dst_sbi_accent_summary">Tint all statusbar icons with the DST accent color (requires SystemUI restart)</string>
 
     <!-- Quick Settings Widgets -->
     <string name="quick_settings_widgets_summary">Show Quick Settings Widgets</string>

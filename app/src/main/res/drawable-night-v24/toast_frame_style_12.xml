@@ -21,7 +21,7 @@
                 android:start="4.0dp"
                 android:top="4.0dp">
                 <shape>
-                    <solid android:color="@android:color/system_neutral1_800" />
+                    <solid android:color="@android:color/system_neutral1_900" />
                     <corners
                         android:bottomLeftRadius="14dp"
                         android:bottomRightRadius="24dp"

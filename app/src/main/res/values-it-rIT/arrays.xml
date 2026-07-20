@@ -21,11 +21,11 @@
     </string-array>
 
     <string-array name="dst_cpb_preset_names">
-        <item>BPC Aurora Theme</item>
-        <item>BPC Arrow</item>
-        <item>BPC Radioactive</item>
-        <item>BPC Sprite Theme</item>
-        <item>BPC Stars</item>
+        <item>CPB Aurora Theme</item>
+        <item>CPB Arrow</item>
+        <item>CPB Radioactive</item>
+        <item>CPB Sprite Theme</item>
+        <item>CPB Stars</item>
     </string-array>
 
     <string-array name="dst_rvd_preset_names">

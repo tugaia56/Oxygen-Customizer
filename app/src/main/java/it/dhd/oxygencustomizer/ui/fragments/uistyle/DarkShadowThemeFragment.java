@@ -8,6 +8,8 @@ import static it.dhd.oxygencustomizer.utils.DarkShadowUtils.BACKGROUND;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.widget.Toast;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.util.TypedValue;
@@ -51,6 +53,9 @@ import it.dhd.oxygencustomizer.utils.overlay.FabricatedUtil;
 import it.dhd.oxygencustomizer.utils.overlay.OverlayUtil;
 
 public class DarkShadowThemeFragment extends BaseFragment {
+
+    // ── Section color: uses current DST accent for all sections ──────────────
+    private int sectionColor() { return DarkShadowUtils.getColor(ACCENT1); }
 
     // ── Base theme overlays ────────────────────────────────────────────────────
     // DSTSUI è mutable (non immutable), quindi abilitarlo a runtime via OC è sicuro (non causa bootloop al boot)
@@ -690,6 +695,82 @@ public class DarkShadowThemeFragment extends BaseFragment {
                 .show();
     }
 
+    /** Styled icon: background = dark tint of section color, icon = section color (Obsidian style). */
+    private void styleIcon(ImageView icon, int sectionColor) {
+        float dp    = getResources().getDisplayMetrics().density;
+        int sizePx  = Math.round(40 * dp);
+        int padPx   = Math.round(8  * dp);
+        // Normalize container layout so both view_widget_list and view_widget_switch
+        // position the icon and text identically.
+        // view_widget_switch has a large paddingStart (@dimen/preference_title_padding_start)
+        // and no marginStart on text_container; view_widget_list has 6dp padding + 9dp text margin.
+        // We zero the container paddingStart and explicitly set the text_container marginStart.
+        if (icon.getParent() instanceof ViewGroup parent) {
+            parent.setPaddingRelative(0, parent.getPaddingTop(),
+                    parent.getPaddingEnd(), parent.getPaddingBottom());
+            View textContainer = parent.findViewById(R.id.text_container);
+            if (textContainer != null) {
+                ViewGroup.MarginLayoutParams tlp =
+                        (ViewGroup.MarginLayoutParams) textContainer.getLayoutParams();
+                if (tlp != null) {
+                    tlp.setMarginStart(Math.round(9 * dp));
+                    textContainer.setLayoutParams(tlp);
+                }
+            }
+        }
+        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(sizePx, sizePx);
+        lp.addRule(RelativeLayout.ALIGN_PARENT_START);
+        lp.addRule(RelativeLayout.CENTER_VERTICAL);
+        lp.setMarginStart(Math.round(12 * dp));
+        icon.setLayoutParams(lp);
+        icon.setPadding(padPx, padPx, padPx, padPx);
+        // Icon background: section color at ~35% over the dark card base → dark tint of the border color
+        int iconBgColor = Color.argb(90,
+                Color.red(sectionColor),
+                Color.green(sectionColor),
+                Color.blue(sectionColor));
+        GradientDrawable bg = new GradientDrawable();
+        bg.setShape(GradientDrawable.RECTANGLE);
+        bg.setColor(iconBgColor);
+        bg.setCornerRadius(10 * dp);
+        bg.setStroke(Math.round(1.5f * dp), sectionColor);
+        icon.setBackground(bg);
+        icon.setImageTintList(null);
+        icon.setColorFilter(sectionColor, PorterDuff.Mode.SRC_IN); // icon = border color
+        icon.setVisibility(View.VISIBLE);
+    }
+
+    /** Applies a color-preview oval to the icon ImageView (no layout side-effects). */
+    private void applyColorCircle(android.widget.ImageView icon, int color, float dp) {
+        GradientDrawable circle = new GradientDrawable();
+        circle.setShape(GradientDrawable.OVAL);
+        circle.setColor(color);
+        circle.setStroke(Math.round(2f * dp), Color.WHITE);
+        icon.setImageDrawable(circle);
+        icon.setImageTintList(null);
+    }
+
+    /** Adds 8dp bottom spacing between RecyclerView items (Obsidian style). */
+    private void spaceItem(RecyclerView.ViewHolder holder) {
+        ViewGroup.MarginLayoutParams lp =
+                (ViewGroup.MarginLayoutParams) holder.itemView.getLayoutParams();
+        if (lp != null) {
+            lp.bottomMargin = Math.round(8 * getResources().getDisplayMetrics().density);
+            holder.itemView.setLayoutParams(lp);
+        }
+    }
+
+    private GradientDrawable makeSectionBg(int strokeColor, int position, int count) {
+        float dp = getResources().getDisplayMetrics().density;
+        int bg   = requireContext().getColor(android.R.color.system_neutral1_900);
+        GradientDrawable d = new GradientDrawable();
+        d.setShape(GradientDrawable.RECTANGLE);
+        d.setColor(bg);
+        d.setCornerRadius(14 * dp);
+        d.setStroke(Math.round(1.5f * dp), strokeColor);
+        return d;
+    }
+
     private int resolveClearAllColor(int preset) {
         int accent = DarkShadowUtils.getColor(ACCENT1);
         int bg     = DarkShadowUtils.getColor(BACKGROUND);
@@ -734,24 +815,15 @@ public class DarkShadowThemeFragment extends BaseFragment {
             DarkShadowItem item = ITEMS[position];
             holder.title.setText(TITLE_RES[position]);
 
-            // Colored circle
             int savedColor = DarkShadowUtils.getColor(item);
-            GradientDrawable circle = new GradientDrawable();
-            circle.setShape(GradientDrawable.OVAL);
-            circle.setColor(savedColor);
-            holder.icon.setImageDrawable(circle);
+            float dp = getResources().getDisplayMetrics().density;
+            applyColorCircle(holder.icon, savedColor, dp);
             holder.icon.setVisibility(View.VISIBLE);
 
             holder.summary.setText(String.format("#%08X", 0xFFFFFFFFL & savedColor));
             holder.summary.setVisibility(View.VISIBLE);
 
-            if (position == 0) {
-                holder.container.setBackgroundResource(R.drawable.preference_background_top);
-            } else if (position == COUNT - 1) {
-                holder.container.setBackgroundResource(R.drawable.preference_background_bottom);
-            } else {
-                holder.container.setBackgroundResource(R.drawable.preference_background_middle);
-            }
+            holder.container.setBackground(makeSectionBg(sectionColor(), position, COUNT));
 
             int pos = position;
             holder.container.setOnClickListener(v -> {
@@ -771,6 +843,7 @@ public class DarkShadowThemeFragment extends BaseFragment {
                         .setNegativeButton(android.R.string.cancel, null)
                         .show();
             });
+            spaceItem(holder);
         }
 
         @Override
@@ -806,16 +879,11 @@ public class DarkShadowThemeFragment extends BaseFragment {
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             holder.summary.setVisibility(View.VISIBLE);
             holder.icon.setVisibility(View.VISIBLE);
-            holder.container.setBackgroundResource(position == 0
-                    ? R.drawable.preference_background_top
-                    : R.drawable.preference_background_bottom);
+            holder.container.setBackground(makeSectionBg(sectionColor(), position, 2));
 
             DarkShadowItem colorItem = (position == 0) ? BACKGROUND : ACCENT1;
-            GradientDrawable circle = new GradientDrawable();
-            circle.setShape(GradientDrawable.OVAL);
-            circle.setColor(DarkShadowUtils.getColor(colorItem));
-            holder.icon.setImageDrawable(circle);
-            holder.icon.setImageTintList(null);
+            float dp = getResources().getDisplayMetrics().density;
+            applyColorCircle(holder.icon, DarkShadowUtils.getColor(colorItem), dp);
 
             if (position == 0) {
                 holder.title.setText(R.string.dark_shadow_preset_background);
@@ -825,7 +893,10 @@ public class DarkShadowThemeFragment extends BaseFragment {
                         showFabricatedPresetDialog(
                                 getString(R.string.dark_shadow_preset_background),
                                 BG_NAMES, BG_COLORS, BACKGROUND, PREF_BG, mBgPickerDialogId,
-                                () -> { if (mColorPresetsAdapter != null) mColorPresetsAdapter.notifyItemChanged(0); }));
+                                () -> {
+                                    if (mColorPresetsAdapter != null) mColorPresetsAdapter.notifyItemChanged(0);
+                                    if (mColorsAdapter != null) mColorsAdapter.notifyItemChanged(0);
+                                }));
             } else {
                 holder.title.setText(R.string.dark_shadow_preset_accent);
                 String saved = OCPreferences.getString(PREF_AC, null);
@@ -834,8 +905,12 @@ public class DarkShadowThemeFragment extends BaseFragment {
                         showFabricatedPresetDialog(
                                 getString(R.string.dark_shadow_preset_accent),
                                 AC_NAMES, AC_COLORS, ACCENT1, PREF_AC, mAcPickerDialogId,
-                                () -> { if (mColorPresetsAdapter != null) mColorPresetsAdapter.notifyItemChanged(1); }));
+                                () -> {
+                                    if (mColorPresetsAdapter != null) mColorPresetsAdapter.notifyItemChanged(1);
+                                    if (mColorsAdapter != null) mColorsAdapter.notifyItemChanged(1);
+                                }));
             }
+            spaceItem(holder);
         }
 
         @Override public int getItemCount() { return 2; }
@@ -859,15 +934,14 @@ public class DarkShadowThemeFragment extends BaseFragment {
 
     private class DstUtilityAdapter extends RecyclerView.Adapter<DstUtilityAdapter.ViewHolder> {
 
-        private static final int COUNT = 7;
+        private static final int COUNT = 6;
         private static final int TYPE_NORMAL = 0;
         private static final int TYPE_SWITCH = 1;
-        private static final String PREF_QS_BG       = "DST_QS_BG_ENABLED";
         private static final String PREF_MONET_FREEZE = "DST_MONET_FREEZE";
 
         @Override
         public int getItemViewType(int position) {
-            return (position == 4 || position == 5) ? TYPE_SWITCH : TYPE_NORMAL;
+            return (position == 4) ? TYPE_SWITCH : TYPE_NORMAL;
         }
 
         @NonNull @Override
@@ -885,17 +959,7 @@ public class DarkShadowThemeFragment extends BaseFragment {
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             holder.summary.setVisibility(View.VISIBLE);
-            holder.icon.setVisibility(View.VISIBLE);
-            TypedValue tv = new TypedValue();
-            requireContext().getTheme().resolveAttribute(android.R.attr.colorAccent, tv, true);
-            holder.icon.setImageTintList(ColorStateList.valueOf(tv.data));
-            if (position == 0) {
-                holder.container.setBackgroundResource(R.drawable.preference_background_top);
-            } else if (position == COUNT - 1) {
-                holder.container.setBackgroundResource(R.drawable.preference_background_bottom);
-            } else {
-                holder.container.setBackgroundResource(R.drawable.preference_background_middle);
-            }
+            holder.container.setBackground(makeSectionBg(sectionColor(), position, COUNT));
 
             switch (position) {
                 case 0: {
@@ -979,20 +1043,6 @@ public class DarkShadowThemeFragment extends BaseFragment {
                 }
                 case 4: {
                     SwitchViewHolder svh = (SwitchViewHolder) holder;
-                    svh.icon.setImageResource(R.drawable.ic_qs);
-                    svh.title.setText(R.string.dst_qs_solid_bg);
-                    svh.summary.setText(R.string.dst_qs_solid_bg_summary);
-                    svh.switchWidget.setOnCheckedChangeListener(null);
-                    svh.switchWidget.setChecked(OCPreferences.getBoolean(PREF_QS_BG, false));
-                    svh.switchWidget.setOnCheckedChangeListener((btn, isChecked) -> {
-                        OCPreferences.putBoolean(PREF_QS_BG, isChecked);
-                        AppUtils.restartScope("systemui");
-                    });
-                    svh.container.setOnClickListener(v -> svh.switchWidget.toggle());
-                    break;
-                }
-                case 5: {
-                    SwitchViewHolder svh = (SwitchViewHolder) holder;
                     svh.icon.setImageResource(R.drawable.ic_notifications);
                     svh.title.setText(R.string.dst_notif_freeze);
                     svh.summary.setText(R.string.dst_notif_freeze_summary);
@@ -1005,7 +1055,7 @@ public class DarkShadowThemeFragment extends BaseFragment {
                     svh.container.setOnClickListener(v -> svh.switchWidget.toggle());
                     break;
                 }
-                case 6: {
+                case 5: {
                     holder.icon.setImageResource(R.drawable.ic_recents);
                     holder.title.setText(R.string.dark_shadow_preset_clear_all);
                     int savedIdx = -1;
@@ -1016,10 +1066,12 @@ public class DarkShadowThemeFragment extends BaseFragment {
                             ? caNames[savedIdx] : getString(R.string.dark_shadow_none));
                     holder.container.setOnClickListener(v ->
                             showClearAllDialog(
-                                    () -> { if (mUtilityAdapter != null) mUtilityAdapter.notifyItemChanged(6); }));
+                                    () -> { if (mUtilityAdapter != null) mUtilityAdapter.notifyItemChanged(5); }));
                     break;
                 }
             }
+            styleIcon(holder.icon, sectionColor());
+            spaceItem(holder);
         }
 
         @Override public int getItemCount() { return COUNT; }
@@ -1060,9 +1112,12 @@ public class DarkShadowThemeFragment extends BaseFragment {
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             holder.summary.setVisibility(View.VISIBLE);
-            holder.container.setBackgroundResource(R.drawable.preference_background_center);
+            holder.container.setBackground(makeSectionBg(sectionColor(), 0, 1));
             holder.title.setText(R.string.dark_shadow_apply_theme);
             holder.summary.setText(R.string.dark_shadow_apply_theme_summary);
+            holder.icon.setImageResource(R.drawable.ic_refresh);
+            styleIcon(holder.icon, sectionColor());
+            spaceItem(holder);
             holder.container.setOnClickListener(v -> restartSystemUI());
         }
 
@@ -1071,12 +1126,13 @@ public class DarkShadowThemeFragment extends BaseFragment {
         class ViewHolder extends RecyclerView.ViewHolder {
             final RelativeLayout container;
             final TextView title, summary;
+            final ImageView icon;
             ViewHolder(@NonNull View v) {
                 super(v);
                 container = v.findViewById(R.id.container);
                 title     = v.findViewById(R.id.title);
                 summary   = v.findViewById(R.id.summary);
-                v.findViewById(R.id.icon).setVisibility(View.GONE);
+                icon      = v.findViewById(R.id.icon);
             }
         }
     }

@@ -1551,9 +1551,9 @@
     <color name="oplus_qs_quick_entrance_text_color">@*android:color/background_dark</color>
     <color name="oplus_qs_quick_entrance_text_color_night">#ffffffff</color>
     <color name="oplus_qs_quick_user_text_color_night">#ffffffff</color>
-    <color name="oplus_reboot_color">#ff63c83b</color>
+    <color name="oplus_reboot_color">@*android:color/accent_material_dark</color>
     <color name="oplus_road_color">#33ffffff</color>
-    <color name="oplus_shutdown_color">#ffe93d28</color>
+    <color name="oplus_shutdown_color">@*android:color/accent_material_dark</color>
     <color name="oplus_shutdown_dialog_blur_color">#4c000000</color>
     <color name="oplus_shutdown_dialog_motion_layer_bottom_color">#59333333</color>
     <color name="oplus_shutdown_dialog_motion_layer_top_color">#4c000000</color>
@@ -1805,9 +1805,9 @@
     <color name="shortcut_title_text_color">#e6000000</color>
     <color name="shortcuts_key_text_background">#14000000</color>
     <color name="shortcuts_key_text_color">#e6000000</color>
-    <color name="shutdown_color">#ffe93d28</color>
+    <color name="shutdown_color">@*android:color/accent_material_dark</color>
     <color name="shutdown_emergency_bar_color">@*android:color/accent_material_dark</color>
-    <color name="shutdown_reboot_color">#ff63c83b</color>
+    <color name="shutdown_reboot_color">@*android:color/accent_material_dark</color>
     <color name="simple_banner_text_color">#ffffffff</color>
     <color name="sku_keyboard_view_top_text_color">#4dffffff</color>
     <color name="sku_security_keyboard_bg_bottom_color">@*android:color/background_dark</color>

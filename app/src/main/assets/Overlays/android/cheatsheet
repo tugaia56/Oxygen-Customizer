@@ -1,3 +1,20 @@
+DSTD -> Dialog Window
+1 - DSTDHT= Dialog Higher Transparent
+2 - DSTDHTO= Dialog Higher Transparent Outlined
+3 - DSTDLT= Dialog Lower Transparent
+4 - DSTDLYO= Dialog Lower Transparent Outlined
+5 - DSTDMT= Dialog Medium Transparent
+6 - DSTDMTO= Dialog Medium Transparent Outlined
+7 - DSTDS= Dialog Solid
+8 - DSTDSO= Dialog Solid Outlined
+
+DSTCPB Barra Progresso Circolare
+1 - DSTCPB1 BPC Aurora Theme
+2 - DSTCPB2 BPC Arrow
+3 - DSTCPB3 BPC Radioactive
+4 - DSTCPB4 BPC Sprite Theme
+5 - DSTCPB5 BPC Stars
+
 TH -> Android Theme
 1 - AndroidEspressoTheme
 2 - AndroidSnowpaintDropTheme
@@ -10,13 +27,4 @@ TH -> Android Theme
 9 - Shishu Theme
 10 - Solarized Dark Theme
 11 - Android Black
-
-DSTD**** -> Dialog Window
-1 - DSTDHT= Dialog Higher Transparent
-2 - DSTDHTO= Dialog Higher Transparent Outlined
-3 - DSTDLT= Dialog Lower Transparent
-4 - DSTDLYO= Dialog Lower Transparent Outlined
-5 - DSTDMT= Dialog Medium Transparent
-6 - DSTDMTO= Dialog Medium Transparent Outlined
-7 - DSTDS= Dialog Solid
-8 - DSTDSO= Dialog Solid Outlined
+12 - Dark Shadow Theme
