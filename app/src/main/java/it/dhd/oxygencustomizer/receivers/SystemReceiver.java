@@ -50,6 +50,10 @@ public class SystemReceiver extends BroadcastReceiver {
             // (Magisk post-exec.sh may run before SystemUI has fully loaded its resources;
             //  re-enabling here guarantees the resource-reload notification fires while SystemUI is running)
             reapplyPinFabricatedOnBoot();
+        } else if (Intent.ACTION_USER_UNLOCKED.equals(action)) {
+            Intent broadcast = new Intent(Constants.ACTIONS_USER_UNLOCKED);
+            broadcast.putExtra("packageName", SYSTEM_UI);
+            context.sendBroadcast(broadcast);
         }
     }
 
