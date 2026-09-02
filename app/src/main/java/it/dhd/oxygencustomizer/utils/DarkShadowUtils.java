@@ -63,7 +63,7 @@ public final class DarkShadowUtils {
     public static final DarkShadowItem BACKGROUND =
             new DarkShadowItem("BACKGROUND", "Background", "",
                     new ArrayList<>() {{
-                        addAll(List.of("background_dark", "background_device_default_dark",
+                        addAll(List.of("background_dark",
                                 "legacy_primary", "legacy_primary_dark", "black",
                                 "primary_dark_material_dark", "primary_material_dark"));
                     }},
@@ -76,6 +76,17 @@ public final class DarkShadowUtils {
                             "holo_primary_dark", 50,
                             "background_holo_dark", 55,
                             "background_leanback_dark", 60
+                    ),
+                    Map.of(
+                            "group_button_dialog_focused_holo_dark",  0xe6,  // 10% trasparente
+                            "group_button_dialog_focused_holo_light", 0xcc,  // 20% trasparente
+                            "group_button_dialog_pressed_holo_dark",  0xa6,  // 40% trasparente
+                            "group_button_dialog_pressed_holo_light", 0x80,  // 50% trasparente
+                            "car_blue_grey_800",                      0x33,  // 80% trasparente
+                            "car_blue_grey_900",                      0x1a   // 90% trasparente
+                            // background_device_default_dark, primary_device_default_dark,
+                            // surface_dark rimossi: sono colori di sistema critici, la loro
+                            // modifica via FabricatedOverlay forza un resource reload su tutte le app
                     ),
                     new ArrayList<>() {{
                         add("android");

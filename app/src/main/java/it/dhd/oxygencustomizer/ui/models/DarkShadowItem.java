@@ -17,6 +17,8 @@ public class DarkShadowItem {
     private List<String> mResourceName;
     private List<String> mPackages = new ArrayList<>();
     private Map<String, Integer> mAdjustColors = new HashMap<>();
+    private Map<String, Integer> mAlphaColors = new HashMap<>();
+    private Map<String, Integer> mFixedColors = new HashMap<>();
     private int mColor;
 
     public DarkShadowItem(String overlayName, String title, String summary, List<String> resourceNames, List<String> packages) {
@@ -44,6 +46,32 @@ public class DarkShadowItem {
         this.mPackages.addAll(packages);
         this.mResourceName = resourceNames;
         this.mAdjustColors = ajustColors;
+        this.mColor = color;
+    }
+
+    public DarkShadowItem(String overlayName, String title, String summary, List<String> resourceNames, Map<String, Integer> ajustColors, Map<String, Integer> alphaColors, List<String> packages, int color) {
+        this.mOverlayName = overlayName;
+        this.mTitle = title;
+        this.mSummary = summary;
+        this.mPackages.addAll(packages);
+        this.mResourceName = resourceNames;
+        this.mAdjustColors = ajustColors;
+        this.mAlphaColors = alphaColors;
+        this.mColor = color;
+    }
+
+    public DarkShadowItem(String overlayName, String title, String summary,
+            List<String> resourceNames, Map<String, Integer> ajustColors,
+            Map<String, Integer> alphaColors, Map<String, Integer> fixedColors,
+            List<String> packages, int color) {
+        this.mOverlayName = overlayName;
+        this.mTitle = title;
+        this.mSummary = summary;
+        this.mPackages.addAll(packages);
+        this.mResourceName = resourceNames;
+        this.mAdjustColors = ajustColors;
+        this.mAlphaColors = alphaColors;
+        this.mFixedColors = fixedColors;
         this.mColor = color;
     }
 
@@ -81,6 +109,14 @@ public class DarkShadowItem {
 
     public Map<String, Integer> getAdjustColors() {
         return mAdjustColors;
+    }
+
+    public Map<String, Integer> getAlphaColors() {
+        return mAlphaColors;
+    }
+
+    public Map<String, Integer> getFixedColors() {
+        return mFixedColors;
     }
 
     @Override

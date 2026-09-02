@@ -188,6 +188,17 @@ public final class Constants {
             };
         }
 
+        public static class QsBgTint {
+            public static final String QS_BG_TINT_ENABLED = "qs_bg_tint_enabled";
+            public static final String QS_BG_TINT_COLOR   = "qs_bg_tint_color";
+            public static final String QS_BG_TINT_ALPHA   = "qs_bg_tint_alpha";
+            public static final String[] QS_BG_TINT_PREFS = {
+                    QS_BG_TINT_ENABLED,
+                    QS_BG_TINT_COLOR,
+                    QS_BG_TINT_ALPHA
+            };
+        }
+
         public static class QuickSettings {
             public static final String QS_TRANSPARENCY_SWITCH = "qs_transparency_switch";
             public static final String QS_TRANSPARENCY_VAL = "qs_transparency_value";
@@ -1010,6 +1021,7 @@ public final class Constants {
 
     public static final String XPOSED_RESOURCE_TEMP_DIR = Environment.getExternalStorageDirectory() + "/.oxygen_customizer";
     public static final String HEADER_IMAGE_DIR = XPOSED_RESOURCE_TEMP_DIR + "/header_image.png";
+    // QS_BG_IMAGE_DIR removed — replaced by QsBgTint (no image file needed)
     public static final String HEADER_CLOCK_USER_IMAGE = XPOSED_RESOURCE_TEMP_DIR + "/header_clock_user_image.png";
     public static final String HEADER_CLOCK_FONT_DIR = XPOSED_RESOURCE_TEMP_DIR + "/header_clock_font.ttf";
     public static final String LOCKSCREEN_CLOCK_FONT_DIR = XPOSED_RESOURCE_TEMP_DIR + "/lockscreen_clock_font.ttf";

@@ -629,6 +629,12 @@
     <string name="qs_header_image_zoomtofit_title">Zoom To Fit</string>
     <string name="qs_header_image_zoomtofit_summary">Image is stretched to fit by default</string>
 
+    <!-- QS Background Tint Strings -->
+    <string name="qs_bg_tint_enabled_title">QS background tint</string>
+    <string name="qs_bg_tint_enabled_summary">Apply a color tint behind the QS panel</string>
+    <string name="qs_bg_tint_color_title">Tint color</string>
+    <string name="qs_bg_tint_alpha_title">Tint opacity</string>
+
     <!-- QS Header Clock Strings -->
     <string name="qs_header_clock">QS Header Clock</string>
     <string name="qs_header_clock_intro_title">Enabling and disabling Custom Clock needs SystemUI restart.\nTap on menu to restart.</string>

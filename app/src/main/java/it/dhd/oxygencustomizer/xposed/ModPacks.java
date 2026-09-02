@@ -65,6 +65,7 @@ import it.dhd.oxygencustomizer.xposed.hooks.systemui.statusbar.BatteryBar;
 import it.dhd.oxygencustomizer.xposed.hooks.systemui.statusbar.BatteryStyleManager;
 import it.dhd.oxygencustomizer.xposed.hooks.systemui.statusbar.HeaderClock;
 import it.dhd.oxygencustomizer.xposed.hooks.systemui.statusbar.HeaderImage;
+import it.dhd.oxygencustomizer.xposed.hooks.systemui.statusbar.QsBgTint;
 import it.dhd.oxygencustomizer.xposed.hooks.systemui.statusbar.NotificationTransparency;
 import it.dhd.oxygencustomizer.xposed.hooks.systemui.statusbar.NotificationVanillaIceCream;
 import it.dhd.oxygencustomizer.xposed.hooks.systemui.statusbar.QSTiles;
@@ -158,6 +159,7 @@ public class ModPacks {
                     modPacks.add(NotificationVanillaIceCream.class);
                     // QS
                     modPacks.add(HeaderImage.class); // Load first QS Header Image since we have to check ScrimView Alpha before set by QS Transparency
+                    modPacks.add(QsBgTint.class);
                     modPacks.add(DepthWallpaper.class); // Load first Depth Wallpaper since we have to check ScrimView Alpha before set by QS Transparency
                     modPacks.add(HeaderClock.class);
                     modPacks.add(QSTransparency.class);

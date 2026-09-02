@@ -275,70 +275,122 @@ public class DarkShadowThemeFragment extends BaseFragment {
         @Override
         public void onEnabledClicked(DarkShadowItem darkShadowItem) {
             loadingDialog.show(getString(R.string.loading_dialog_wait));
-            Log.w("DarkShadowThemeFragment", "onEnabledClicked: " + darkShadowItem.toString());
             DarkShadowUtils.saveColor(darkShadowItem);
-//            enableShadowTheme();
-            int i = 0;
-            for (String resName : darkShadowItem.getResourceNames()) {
-                FabricatedUtil
-                        .buildAndEnableOverlay(
-                                darkShadowItem.getPackages().get(0),
-                                darkShadowItem.getOverlayName() + "_" + i,
-                                "color",
-                                resName,
-                                String.format("0x%08X", (0xFFFFFFFF & darkShadowItem.getColor()))
-                        );
-                i++;
-            }
-            int j = i;
-            if (!darkShadowItem.getAdjustColors().isEmpty()) {
-                for (String resName : darkShadowItem.getAdjustColors().keySet()) {
+            new Thread(() -> {
+                int i = 0;
+                for (String resName : darkShadowItem.getResourceNames()) {
                     FabricatedUtil
                             .buildAndEnableOverlay(
                                     darkShadowItem.getPackages().get(0),
-                                    darkShadowItem.getOverlayName() + "_" + j,
+                                    darkShadowItem.getOverlayName() + "_" + i,
                                     "color",
                                     resName,
-                                    String.format("0x%08X", (0xFFFFFFFF & ColorUtils.adjustColor(darkShadowItem.getColor(), darkShadowItem.getAdjustColors().get(resName))))
+                                    String.format("0x%08X", (0xFFFFFFFF & darkShadowItem.getColor()))
                             );
-                    j++;
+                    i++;
                 }
-            }
-            // Update PIN accent overlay if Accent/AccentShade preset is active
-            if ("ACCENT1".equals(darkShadowItem.getOverlayName())) {
-                String pinPref = OCPreferences.getString(PREF_PIN, null);
-                if ("DSTPINAccent".equals(pinPref)) {
-                    applyPinAccentFabricated(darkShadowItem.getColor(), false);
-                } else if ("DSTPINAccentShade".equals(pinPref)) {
-                    applyPinAccentFabricated(darkShadowItem.getColor(), true);
+                int j = i;
+                if (!darkShadowItem.getAdjustColors().isEmpty()) {
+                    for (String resName : darkShadowItem.getAdjustColors().keySet()) {
+                        FabricatedUtil
+                                .buildAndEnableOverlay(
+                                        darkShadowItem.getPackages().get(0),
+                                        darkShadowItem.getOverlayName() + "_" + j,
+                                        "color",
+                                        resName,
+                                        String.format("0x%08X", (0xFFFFFFFF & ColorUtils.adjustColor(darkShadowItem.getColor(), darkShadowItem.getAdjustColors().get(resName))))
+                                );
+                        j++;
+                    }
                 }
-            }
-            loadingDialog.dismiss();
+                int k = j;
+                if (!darkShadowItem.getAlphaColors().isEmpty()) {
+                    int baseRgb = darkShadowItem.getColor() & 0x00FFFFFF;
+                    for (String resName : darkShadowItem.getAlphaColors().keySet()) {
+                        int alpha = darkShadowItem.getAlphaColors().get(resName);
+                        int alphaColor = (alpha << 24) | baseRgb;
+                        FabricatedUtil
+                                .buildAndEnableOverlay(
+                                        darkShadowItem.getPackages().get(0),
+                                        darkShadowItem.getOverlayName() + "_" + k,
+                                        "color",
+                                        resName,
+                                        String.format("0x%08X", (0xFFFFFFFFL & alphaColor))
+                                );
+                        k++;
+                    }
+                }
+                int l = k;
+                if (!darkShadowItem.getFixedColors().isEmpty()) {
+                    for (String resName : darkShadowItem.getFixedColors().keySet()) {
+                        FabricatedUtil
+                                .buildAndEnableOverlay(
+                                        darkShadowItem.getPackages().get(0),
+                                        darkShadowItem.getOverlayName() + "_" + l,
+                                        "color",
+                                        resName,
+                                        String.format("0x%08X", (0xFFFFFFFFL & darkShadowItem.getFixedColors().get(resName)))
+                                );
+                        l++;
+                    }
+                }
+                // Update PIN accent overlay if Accent/AccentShade preset is active
+                if ("ACCENT1".equals(darkShadowItem.getOverlayName())) {
+                    String pinPref = OCPreferences.getString(PREF_PIN, null);
+                    if ("DSTPINAccent".equals(pinPref)) {
+                        applyPinAccentFabricated(darkShadowItem.getColor(), false);
+                    } else if ("DSTPINAccentShade".equals(pinPref)) {
+                        applyPinAccentFabricated(darkShadowItem.getColor(), true);
+                    }
+                }
+                if (isAdded()) requireActivity().runOnUiThread(loadingDialog::dismiss);
+            }).start();
         }
 
         @Override
         public void onDisabledClicked(DarkShadowItem darkShadowItem) {
             loadingDialog.show(getString(R.string.loading_dialog_wait));
-            Log.w("DarkShadowThemeFragment", "onDisabledClicked: " + darkShadowItem.toString());
-            int i = 0;
-            for (String resName : darkShadowItem.getResourceNames()) {
-                FabricatedUtil
-                        .disableOverlay(
-                                darkShadowItem.getOverlayName() + "_" + i
-                        );
-                i++;
-            }
-            int j = i;
-            if (!darkShadowItem.getAdjustColors().isEmpty()) {
-                for (String resName : darkShadowItem.getAdjustColors().keySet()) {
+            new Thread(() -> {
+                int i = 0;
+                for (String resName : darkShadowItem.getResourceNames()) {
                     FabricatedUtil
                             .disableOverlay(
-                                    darkShadowItem.getOverlayName() + "_" + j
+                                    darkShadowItem.getOverlayName() + "_" + i
                             );
-                    j++;
+                    i++;
                 }
-            }
-            loadingDialog.dismiss();
+                int j = i;
+                if (!darkShadowItem.getAdjustColors().isEmpty()) {
+                    for (String resName : darkShadowItem.getAdjustColors().keySet()) {
+                        FabricatedUtil
+                                .disableOverlay(
+                                        darkShadowItem.getOverlayName() + "_" + j
+                                );
+                        j++;
+                    }
+                }
+                int k = j;
+                if (!darkShadowItem.getAlphaColors().isEmpty()) {
+                    for (String resName : darkShadowItem.getAlphaColors().keySet()) {
+                        FabricatedUtil
+                                .disableOverlay(
+                                        darkShadowItem.getOverlayName() + "_" + k
+                                );
+                        k++;
+                    }
+                }
+                int l = k;
+                if (!darkShadowItem.getFixedColors().isEmpty()) {
+                    for (String resName : darkShadowItem.getFixedColors().keySet()) {
+                        FabricatedUtil
+                                .disableOverlay(
+                                        darkShadowItem.getOverlayName() + "_" + l
+                                );
+                        l++;
+                    }
+                }
+                if (isAdded()) requireActivity().runOnUiThread(loadingDialog::dismiss);
+            }).start();
         }
     };
 

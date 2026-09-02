@@ -555,6 +555,12 @@
     <string name="qs_header_image_summary">Seleziona immagine intestazione impostazioni rapide</string>
     <string name="qs_header_image_enabled_title">Personalizzazione immagine intestazione QS</string>
     <string name="qs_header_image_enabled_summary">Abilita personalizzazione immagine intestazione QS</string>
+    <!-- QS Background Tint Strings -->
+    <string name="qs_bg_tint_enabled_title">Tinta sfondo QS</string>
+    <string name="qs_bg_tint_enabled_summary">Applica una tinta colorata dietro il pannello QS</string>
+    <string name="qs_bg_tint_color_title">Colore tinta</string>
+    <string name="qs_bg_tint_alpha_title">Opacità tinta</string>
+
     <!-- Omni Provider" -->
     <string name="qs_header_provider_title">Provider intestazione</string>
     <string name="qs_header_daylight_pack_title">Raccolta immagini intestazione</string>

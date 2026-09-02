@@ -330,10 +330,32 @@ public class StatusbarClock extends XposedMods {
         CollapsedStatusBarFragmentClass
                 .after("onViewCreated")
                 .run(param -> {
-                    try {
-                        mClockView = (TextView) getObjectField(param.thisObject, "mClockView");
-                    } catch (Throwable ignored) {
-                        log("mClockView not found");
+                    if (mClockView != null) {
+                        // onViewCreated fired again (second fragment instance, e.g. QS-related)
+                        log("StatusbarClock: onViewCreated again on "
+                                + param.thisObject.getClass().getSimpleName()
+                                + " — mClockView already set, skipping");
+                        return;
+                    }
+
+                    // Try known field names for the statusbar clock across AOSP and OOS versions
+                    String[] clockFieldNames = {"mClockView", "mStatClock", "mClock", "mStatusBarClock"};
+                    for (String fieldName : clockFieldNames) {
+                        try {
+                            mClockView = (TextView) getObjectField(param.thisObject, fieldName);
+                            if (mClockView != null) {
+                                log("StatusbarClock: found via field='" + fieldName
+                                        + "' class=" + mClockView.getClass().getSimpleName()
+                                        + " in " + param.thisObject.getClass().getSimpleName());
+                                break;
+                            }
+                        } catch (Throwable ignored) {}
+                    }
+                    if (mClockView == null) {
+                        log("StatusbarClock: clock view not found in "
+                                + param.thisObject.getClass().getSimpleName()
+                                + " — clock hooks disabled");
+                        return;
                     }
                     mClockDefaultLineSpacingExtra = mClockView.getLineSpacingExtra();
                     mClockDefaultLineSpacingMultiplier = mClockView.getLineSpacingMultiplier();
@@ -374,6 +396,7 @@ public class StatusbarClock extends XposedMods {
                 StatClock
                         .after("updateMinWidth")
                         .run(param -> {
+                            if (mClockView == null || param.thisObject != mClockView) return;
                             // StatClock has a method to update the minimum width of the clock
                             // we can use it to update the clock width
                             // Based on our custom formats
@@ -401,6 +424,7 @@ public class StatusbarClock extends XposedMods {
                 StatClock
                         .after("onMeasure")
                                 .run(param -> {
+                                    if (mClockView == null || param.thisObject != mClockView) return;
                                     if (!isOOS1501() && Build.VERSION.SDK_INT < 36) return;
                                     TextView tv = (TextView) param.thisObject;
                                     tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, mClockSize);
@@ -425,6 +449,7 @@ public class StatusbarClock extends XposedMods {
                 StatClock
                         .after("updateConfigurationChanged")
                         .run(param -> {
+                            if (mClockView == null || param.thisObject != mClockView) return;
                             TextView tv = (TextView) param.thisObject;
                             tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, mClockSize);
                             try {
@@ -489,22 +514,30 @@ public class StatusbarClock extends XposedMods {
 
         ClockClass
                 .before("getSmallTime")
-                .run(param -> setObjectField(param.thisObject, "mShowSeconds", mShowSeconds));
+                .run(param -> {
+                    if (mClockView == null || param.thisObject != mClockView) return;
+                    setObjectField(param.thisObject, "mShowSeconds", mShowSeconds);
+                });
 
         ClockClass
                 .after("getSmallTime")
                 .run(param -> {
-                    if (param.thisObject != mClockView)
-                        return; //We don't want custom format in QS header. do we?
+                    // Apply OC format to both statusbar and QS header clock.
+                    // Size/lineSpacing overrides only for the statusbar instance.
+                    // If mClockView is null we cannot distinguish the clocks → leave both untouched.
+                    if (mClockView == null) return;
+                    boolean isStatusbarClock = (param.thisObject == mClockView);
 
                     TextView tv = (TextView) param.thisObject;
-                    if (mClockDoubleRow) {
-                        tv.setSingleLine(false);
-                        tv.setLineSpacing(0f, 0.8f);
-                    } else {
-                        tv.setLineSpacing(mClockDefaultLineSpacingExtra, mClockDefaultLineSpacingMultiplier);
+                    if (isStatusbarClock) {
+                        if (mClockDoubleRow) {
+                            tv.setSingleLine(false);
+                            tv.setLineSpacing(0f, 0.8f);
+                        } else {
+                            tv.setLineSpacing(mClockDefaultLineSpacingExtra, mClockDefaultLineSpacingMultiplier);
+                        }
+                        tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, mClockSize);
                     }
-                    tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, mClockSize);
 
                     SpannableStringBuilder result = new SpannableStringBuilder();
 
@@ -524,7 +557,9 @@ public class StatusbarClock extends XposedMods {
 
                     result.append(getFormattedString(mCustomAfterClock, mCustomAfterSmall, mClockDateStyle, mClockCustomColor ? mClockColor : null)); //after clock
 
-                    if (getAdditionalInstanceField(param.thisObject, "stringFormatCallBack") == null) {
+                    // Live-update callback only needed for the statusbar clock
+                    if (isStatusbarClock &&
+                            getAdditionalInstanceField(param.thisObject, "stringFormatCallBack") == null) {
                         StringFormatter.FormattedStringCallback callback = () -> {
                             if (!mShowSeconds) //don't update again if it's going to do it every second anyway
                                 updateClock();

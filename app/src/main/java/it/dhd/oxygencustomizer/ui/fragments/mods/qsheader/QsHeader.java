@@ -38,13 +38,15 @@ public class QsHeader extends ControlledPreferenceFragmentCompat {
     public void updateScreen(String key) {
         super.updateScreen(key);
 
-        ((OplusJumpPreference)findPreference("qs_header_image_main")).setJumpText(
+        OplusJumpPreference headerImagePref = (OplusJumpPreference) findPreference("qs_header_image_main");
+        if (headerImagePref != null) headerImagePref.setJumpText(
                 mPreferences.getBoolean(QS_HEADER_IMAGE_ENABLED, false) ?
                         getString(R.string.general_on) :
                         getString(R.string.general_off)
         );
 
-        ((OplusJumpPreference)findPreference("qs_header_clock_main")).setJumpText(
+        OplusJumpPreference clockPref = (OplusJumpPreference) findPreference("qs_header_clock_main");
+        if (clockPref != null) clockPref.setJumpText(
                 mPreferences.getBoolean(QS_HEADER_CLOCK_CUSTOM_ENABLED, false) ?
                         mPreferences.getInt(QS_HEADER_CLOCK_CUSTOM_VALUE, 0) == 0 ?
                                 getString(R.string.clock_none) :

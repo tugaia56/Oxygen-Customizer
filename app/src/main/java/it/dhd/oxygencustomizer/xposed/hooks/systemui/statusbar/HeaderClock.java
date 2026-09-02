@@ -654,12 +654,14 @@ public class HeaderClock extends XposedMods {
                         ((ViewGroup) clockContaier.getParent()).removeView(clockContaier);
                     }
 
-                    // Set main container height WRAP_CONTENT
-                    // for better custom clock handling
-                    ViewGroup.LayoutParams containerParams = (ViewGroup.LayoutParams) view.getLayoutParams();
-                    containerParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                    view.setLayoutParams(containerParams);
-                    view.requestLayout();
+                    // Set main container height WRAP_CONTENT only when custom clock is active;
+                    // otherwise the original height (e.g. 0dp+weight) would collapse the stock clock.
+                    if (showHeaderClock) {
+                        ViewGroup.LayoutParams containerParams = (ViewGroup.LayoutParams) view.getLayoutParams();
+                        containerParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                        view.setLayoutParams(containerParams);
+                        view.requestLayout();
+                    }
 
                     if (viewGroup.findViewWithTag(QS_CLOCK_PLUGIN) == null)
                         viewGroup.addView(clockContaier, 0);
