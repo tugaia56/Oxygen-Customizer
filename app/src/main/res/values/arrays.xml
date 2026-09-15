@@ -1152,4 +1152,14 @@
         <item>Grey Button</item>
     </string-array>
 
+    <string-array name="launcher_global_search_intent_entries">
+        <item>@string/qs_widget_custom_app</item>
+        <item>@string/plusKey_activity</item>
+    </string-array>
+
+    <string-array name="launcher_global_search_intent_values">
+        <item>app:</item>
+        <item>activity:</item>
+    </string-array>
+
 </resources>
