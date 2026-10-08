@@ -58,9 +58,6 @@ public class UiStyle extends BaseFragment {
                     pack.get(i).contains("[x]")
                     ));
         }
-        // Add DST navigation shortcut (sorts alphabetically with the overlay themes)
-        mThemeNames.add(new ThemeModel("__DST__", getString(R.string.dark_shadow_title), false));
-
         if (getModulePrefs() != null) {
             getModulePrefs().edit().putInt("UiStylesThemes", TOTAL_ANDROID_THEMES).apply();
         }
