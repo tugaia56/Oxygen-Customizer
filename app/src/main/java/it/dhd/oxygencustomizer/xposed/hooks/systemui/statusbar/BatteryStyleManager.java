@@ -79,6 +79,7 @@ import static it.dhd.oxygencustomizer.utils.Constants.Preferences.BatteryPrefs.C
 import static it.dhd.oxygencustomizer.utils.Constants.Preferences.BatteryPrefs.CUSTOM_BATTERY_WIDTH;
 import static it.dhd.oxygencustomizer.utils.Constants.Preferences.BatteryPrefs.STOCK_CUSTOMIZE_PERCENTAGE_SIZE;
 import static it.dhd.oxygencustomizer.utils.Constants.Preferences.BatteryPrefs.STOCK_PERCENTAGE_SIZE;
+import static it.dhd.oxygencustomizer.utils.Constants.Preferences.BatteryPrefs.STOCK_REMOVE_PERCENTAGE_SYMBOL;
 import static it.dhd.oxygencustomizer.xposed.ResourceManager.modRes;
 import static it.dhd.oxygencustomizer.xposed.XPrefs.Xprefs;
 import static it.dhd.oxygencustomizer.xposed.hooks.systemui.BatteryDataProvider.getCurrentLevel;
@@ -110,6 +111,7 @@ import androidx.core.content.res.ResourcesCompat;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import it.dhd.oxygencustomizer.R;
 import it.dhd.oxygencustomizer.utils.Constants;
@@ -214,6 +216,7 @@ public class BatteryStyleManager extends XposedMods {
     private TextView mBatteryText;
     private boolean customizePercSize = false;
     private int mBatteryPercSize = 12;
+    private boolean removePercentSymbol = true;
     private boolean mIndicateCharging = false,
             mIndicateFast = false,
             mIndicatePowerSave = false;
@@ -289,6 +292,7 @@ public class BatteryStyleManager extends XposedMods {
         // Battery text
         customizePercSize = Xprefs.getBoolean(STOCK_CUSTOMIZE_PERCENTAGE_SIZE, false);
         mBatteryPercSize = Xprefs.getSliderInt(STOCK_PERCENTAGE_SIZE, 12);
+        removePercentSymbol = Xprefs.getBoolean(STOCK_REMOVE_PERCENTAGE_SYMBOL, false);
         mIndicateCharging = Xprefs.getBoolean(BATTERY_TEXT_INDICATE_CHARGING, false);
         mTextChargingColor = Xprefs.getInt(BATTERY_TEXT_CHARGING_COLOR, Color.WHITE);
         mIndicateFast = Xprefs.getBoolean(BATTERY_TEXT_INDICATE_FAST, false);
@@ -463,6 +467,37 @@ public class BatteryStyleManager extends XposedMods {
                     if (param.args[0] instanceof View v) updateBatteryViewValues(v);
                 });
         BatteryViewBinder
+                .after("bind$updatePercentOutView")
+                .run(param -> {
+                    TextView batteryText = (TextView) param.args[0];
+                    Object percentIcon = param.args[param.args.length - 1];
+                    if (batteryText == null || percentIcon == null) return;
+
+                    Object raw = callMethod(percentIcon, "getBatteryLevel");
+                    int perc = (raw instanceof Number) ? ((Number) raw).intValue() : 0;
+
+                    if (removePercentSymbol) batteryText.setText(String.valueOf(perc));
+                    if (CustomBatteryEnabled && mHidePercentage) {
+                        batteryText.setVisibility(View.GONE);
+                    }
+                });
+
+        BatteryViewBinder
+                .after("bind$updateOldHorizontalViewContent")
+                .run(param -> {
+                    TextView batteryText = (TextView) param.args[1];
+                    Object old = param.args[param.args.length - 1];
+                    if (batteryText == null || old == null) return;
+
+                    Object raw = callMethod(old, "getPowerLevel");
+                    int perc = (raw instanceof Number) ? ((Number) raw).intValue() : 0;
+
+                    if (removePercentSymbol) batteryText.setText(String.valueOf(perc));
+                    if (CustomBatteryEnabled && mHidePercentage) {
+                        batteryText.setVisibility(View.GONE);
+                    }
+                });
+        BatteryViewBinder
                 .after("bind$initView")
                 .run(param -> {
                     /*
@@ -540,7 +575,7 @@ public class BatteryStyleManager extends XposedMods {
         } catch (Throwable ignored) {
             log("battery_percentage_view not found");
         }
-        if (batteryOutPercentage != null) {
+        if (batteryOutPercentage != null && batteryOutPercentage.getVisibility() == View.VISIBLE) {
             mBatteryText = batteryOutPercentage;
             batteryOutPercentage.setTextSize(TypedValue.COMPLEX_UNIT_SP,
                     customizePercSize ? Math.max(8, mBatteryPercSize) : 12);
@@ -555,6 +590,13 @@ public class BatteryStyleManager extends XposedMods {
                     }
                 } else {
                     batteryOutPercentage.setTextColor(mBatteryBarColor);
+                }
+            }
+            CharSequence cs = batteryOutPercentage.getText();
+            if (cs != null && removePercentSymbol) {
+                String s = cs.toString();
+                if (s.endsWith("%")) {
+                    batteryOutPercentage.setText(s.substring(0, s.length() - 1));
                 }
             }
         }
